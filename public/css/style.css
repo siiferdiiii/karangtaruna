@@ -169,3 +169,58 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
         background: white;
     }
 }
+
+/* ─── Article Content (Quill HTML rendering) ──────────────────────────────── */
+.article-content ol {
+    list-style-type: decimal;
+    padding-left: 1.75rem;
+    margin: 0.75rem 0;
+}
+.article-content ul {
+    list-style-type: disc;
+    padding-left: 1.75rem;
+    margin: 0.75rem 0;
+}
+.article-content li {
+    margin: 0.3rem 0;
+    line-height: 1.7;
+}
+.article-content ol ol, .article-content ul ul,
+.article-content ol ul, .article-content ul ol {
+    margin: 0.25rem 0;
+}
+.article-content blockquote {
+    border-left: 4px solid #e5792a;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    color: #6b7280;
+    font-style: italic;
+}
+.article-content pre, .article-content code {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+}
+.article-content pre { padding: 1rem; border-radius: 8px; overflow-x: auto; }
+.article-content a { color: #e5792a; text-decoration: underline; }
+.article-content h1, .article-content h2, .article-content h3 {
+    font-weight: 700;
+    margin: 1.2rem 0 0.5rem;
+    color: #111827;
+}
+.article-content h1 { font-size: 2rem; }
+.article-content h2 { font-size: 1.5rem; }
+.article-content h3 { font-size: 1.25rem; }
+.article-content p { margin: 0.5rem 0; }
+.article-content img { max-width: 100%; border-radius: 8px; margin: 0.5rem 0; }
+
+/* Quill font classes for public display */
+.article-content .ql-font-arial { font-family: Arial, Helvetica, sans-serif; }
+.article-content .ql-font-timesnewroman { font-family: 'Times New Roman', Times, serif; }
+.article-content .ql-font-georgia { font-family: Georgia, 'Times New Roman', serif; }
+.article-content .ql-font-couriernew { font-family: 'Courier New', Courier, monospace; }
+.article-content .ql-font-verdana { font-family: Verdana, Geneva, sans-serif; }
+.article-content .ql-font-tahoma { font-family: Tahoma, Geneva, sans-serif; }
