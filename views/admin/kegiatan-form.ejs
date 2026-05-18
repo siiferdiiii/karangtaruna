@@ -97,8 +97,6 @@
     </div>
 </form>
 
-<%- include('partials/footer', { extraScript: '' }) %>
-
 <!-- Quill Editor -->
 <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 <script>
@@ -116,17 +114,14 @@
         }
     });
 
-    // Set initial content jika edit
     <% if (isEdit && item.deskripsi) { %>
     quill.root.innerHTML = <%- JSON.stringify(item.deskripsi) %>;
     <% } %>
 
-    // Submit: copy quill content ke hidden input
     document.getElementById('kegiatanForm').addEventListener('submit', function() {
         document.getElementById('deskripsiInput').value = quill.root.innerHTML;
     });
 
-    // Image preview
     document.getElementById('gambarInput').addEventListener('change', function() {
         var file = this.files[0];
         if (file) {
@@ -139,8 +134,9 @@
         }
     });
 
-    // Toggle pendaftaran info
     document.getElementById('bukaPendaftaran').addEventListener('change', function() {
         document.getElementById('pendaftaranInfo').style.display = this.checked ? 'block' : 'none';
     });
 </script>
+
+<%- include('partials/footer', { extraScript: '' }) %>

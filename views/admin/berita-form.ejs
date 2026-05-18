@@ -114,12 +114,9 @@
     </div>
 </form>
 
-<%- include('partials/footer', { extraScript: '' }) %>
-
 <!-- Quill Editor -->
 <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 <script>
-    // Register font whitelist
     const Font = Quill.import('formats/font');
     Font.whitelist = ['arial', 'timesnewroman', 'georgia', 'couriernew', 'verdana', 'tahoma'];
     Quill.register(Font, true);
@@ -140,30 +137,23 @@
         }
     });
 
-    // Set initial content jika edit
     <% if (isEdit && item.konten) { %>
     quill.root.innerHTML = <%- JSON.stringify(item.konten) %>;
     <% } %>
 
-    // Submit: copy quill content ke hidden input
     document.getElementById('beritaForm').addEventListener('submit', function() {
         document.getElementById('kontenInput').value = quill.root.innerHTML;
     });
 
-    // Auto-generate slug dari judul
     var slugEdited = <%= isEdit ? 'true' : 'false' %>;
     document.getElementById('judulInput').addEventListener('input', function() {
         if (!slugEdited) {
             document.getElementById('slugInput').value = this.value
-                .toLowerCase()
-                .replace(/[^a-z0-9\s-]/g,'')
-                .trim()
-                .replace(/\s+/g,'-');
+                .toLowerCase().replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-');
         }
     });
     document.getElementById('slugInput').addEventListener('input', function() { slugEdited = true; });
 
-    // Image preview
     document.getElementById('gambarInput').addEventListener('change', function() {
         var file = this.files[0];
         if (file) {
@@ -176,3 +166,5 @@
         }
     });
 </script>
+
+<%- include('partials/footer', { extraScript: '' }) %>
