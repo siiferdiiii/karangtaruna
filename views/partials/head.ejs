@@ -32,5 +32,28 @@
             }
         }
     </script>
+<% if (typeof s !== 'undefined' && s && s.primary_color) { %>
+<style>
+:root { --kt-p: <%= s.primary_color %>; }
+/* Override Tailwind karang classes with custom primary color */
+.bg-karang-500    { background-color: var(--kt-p) !important; }
+.bg-karang-600    { background-color: color-mix(in srgb, var(--kt-p) 85%, black) !important; }
+.bg-karang-100    { background-color: color-mix(in srgb, var(--kt-p) 15%, white) !important; }
+.text-karang-500,
+.text-karang-600,
+.text-karang-700  { color: var(--kt-p) !important; }
+.text-karang-400  { color: color-mix(in srgb, var(--kt-p) 70%, white) !important; }
+.text-karang-100  { color: color-mix(in srgb, var(--kt-p) 15%, white) !important; }
+.border-karang-500,
+.border-karang-600 { border-color: var(--kt-p) !important; }
+.hover\:bg-karang-500:hover    { background-color: var(--kt-p) !important; }
+.hover\:border-karang-500:hover { border-color: var(--kt-p) !important; }
+.hover\:text-karang-600:hover  { color: var(--kt-p) !important; }
+.from-karang-500  { --tw-gradient-from: var(--kt-p) !important; }
+.to-karang-600    { --tw-gradient-to: color-mix(in srgb, var(--kt-p) 80%, black) !important; }
+.via-karang-600   { --tw-gradient-via: var(--kt-p) !important; }
+.bg-gradient-to-r.from-karang-500 { background-image: linear-gradient(to right, var(--kt-p), color-mix(in srgb, var(--kt-p) 75%, black)) !important; }
+</style>
+<% } %>
 </head>
 <body class="font-poppins text-gray-800 overflow-x-hidden bg-gray-50">

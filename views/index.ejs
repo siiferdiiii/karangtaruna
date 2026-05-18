@@ -2,61 +2,85 @@
 <%- include('partials/navbar') %>
 
 <!-- Hero Section -->
-<section class="relative min-h-screen flex items-center pt-20 overflow-hidden bg-white">
+<section class="relative min-h-screen flex flex-col justify-center pt-20 overflow-hidden bg-white">
     <div class="absolute inset-0 z-0">
         <div class="absolute top-20 left-10 w-72 h-72 bg-karang-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
-        <div class="absolute bottom-20 right-10 w-72 h-72 bg-taruna-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style="animation-delay: 2s;"></div>
+        <div class="absolute bottom-20 right-10 w-72 h-72 bg-taruna-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style="animation-delay:2s;"></div>
     </div>
 
+    <!-- Mobile Slider (top, hidden on desktop) -->
+    <% if (berita && berita.length > 0) { %>
+    <div class="block lg:hidden relative z-10 px-4 pt-4 pb-2">
+        <div class="relative overflow-hidden rounded-2xl shadow-xl" style="height:220px;" id="mSlider">
+            <% berita.forEach((b, i) => { %>
+            <div class="hm absolute inset-0 transition-opacity duration-700" style="opacity:<%= i===0?1:0 %>;z-index:<%= i===0?1:0 %>">
+                <img src="<%= b.gambar %>" alt="<%= b.judul %>" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                <a href="/berita/<%= b.slug %>" class="absolute bottom-0 left-0 right-0 p-4">
+                    <span class="inline-block px-2 py-0.5 bg-karang-500 text-white text-xs font-bold rounded-full mb-1"><%= b.kategori %></span>
+                    <p class="text-white font-bold text-sm line-clamp-2"><%= b.judul %></p>
+                </a>
+            </div>
+            <% }) %>
+            <button onclick="hmPrev()" class="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 bg-black/30 hover:bg-black/50 rounded-full flex items-center justify-center"><i class="fas fa-chevron-left text-white text-xs"></i></button>
+            <button onclick="hmNext()" class="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 bg-black/30 hover:bg-black/50 rounded-full flex items-center justify-center"><i class="fas fa-chevron-right text-white text-xs"></i></button>
+            <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-20">
+                <% berita.forEach((b, i) => { %><button class="hmd w-2 h-2 rounded-full" style="background:<%= i===0?'white':'rgba(255,255,255,0.4)' %>" onclick="hmGoTo(<%= i %>)"></button><% }) %>
+            </div>
+        </div>
+    </div>
+    <% } %>
+
+    <!-- Grid -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <!-- Left -->
             <div class="space-y-8">
                 <div class="inline-flex items-center px-4 py-2 bg-karang-100 text-karang-700 rounded-full text-sm font-semibold">
                     <span class="w-2 h-2 bg-karang-500 rounded-full mr-2 animate-pulse"></span>
                     <%= s.hero_badge || 'Media Informasi Resmi' %>
                 </div>
-
                 <h1 class="text-5xl lg:text-7xl font-bold leading-tight">
                     <%= s.hero_title_line1 || 'Generasi Muda' %> <br>
                     <span class="bg-gradient-to-r from-karang-500 via-karang-600 to-taruna-600 bg-clip-text text-transparent"><%= s.hero_title_line2 || 'Indonesia Emas' %></span>
                 </h1>
-
-                <p class="text-lg text-gray-600 leading-relaxed max-w-xl">
-                    <%= s.hero_description || 'Karang Taruna adalah organisasi kepemudaan yang menjadi wadah pengembangan generasi muda.' %>
-                </p>
-
+                <p class="text-lg text-gray-600 leading-relaxed max-w-xl"><%= s.hero_description %></p>
                 <div class="flex flex-wrap gap-4">
-                    <a href="/kegiatan" class="px-8 py-4 bg-gradient-to-r from-karang-500 to-karang-600 text-white rounded-full font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2">
-                        Jelajahi Kegiatan <i class="fas fa-arrow-right"></i>
-                    </a>
-                    <a href="/tentang" class="px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-full font-semibold hover:border-karang-500 hover:text-karang-600 transition-all">
-                        Pelajari Lebih Lanjut
-                    </a>
+                    <a href="/kegiatan" class="px-8 py-4 bg-gradient-to-r from-karang-500 to-karang-600 text-white rounded-full font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2">Jelajahi Kegiatan <i class="fas fa-arrow-right"></i></a>
+                    <a href="/tentang" class="px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-full font-semibold hover:border-karang-500 hover:text-karang-600 transition-all">Pelajari Lebih Lanjut</a>
                 </div>
-
                 <div class="flex items-center gap-8 pt-4">
-                    <div><p class="text-3xl font-bold text-gray-900"><%= s.stat1_number || '500+' %></p><p class="text-sm text-gray-500"><%= s.stat1_label || 'Organisasi Aktif' %></p></div>
+                    <div><p class="text-3xl font-bold text-gray-900"><%= s.stat1_number||'500+' %></p><p class="text-sm text-gray-500"><%= s.stat1_label||'Organisasi Aktif' %></p></div>
                     <div class="w-px h-12 bg-gray-300"></div>
-                    <div><p class="text-3xl font-bold text-gray-900"><%= s.stat2_number || '10K+' %></p><p class="text-sm text-gray-500"><%= s.stat2_label || 'Anggota Terdaftar' %></p></div>
+                    <div><p class="text-3xl font-bold text-gray-900"><%= s.stat2_number||'10K+' %></p><p class="text-sm text-gray-500"><%= s.stat2_label||'Anggota Terdaftar' %></p></div>
                     <div class="w-px h-12 bg-gray-300"></div>
-                    <div><p class="text-3xl font-bold text-gray-900"><%= s.stat3_number || '50+' %></p><p class="text-sm text-gray-500"><%= s.stat3_label || 'Program Tahunan' %></p></div>
+                    <div><p class="text-3xl font-bold text-gray-900"><%= s.stat3_number||'50+' %></p><p class="text-sm text-gray-500"><%= s.stat3_label||'Program Tahunan' %></p></div>
                 </div>
             </div>
 
-            <div class="relative">
-                <div class="relative z-10" style="animation: float 6s ease-in-out infinite;">
-                    <img src="<%= s.hero_image || 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&h=700&fit=crop' %>" alt="Youth Activity" class="rounded-3xl shadow-2xl w-full object-cover h-[500px] lg:h-[600px]">
-                    <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                                <i class="fas fa-check text-green-600"></i>
-                            </div>
-                            <div>
-                                <p class="font-bold text-gray-900">Terverifikasi</p>
-                                <p class="text-xs text-gray-500">Oleh Kemenpora RI</p>
-                            </div>
-                        </div>
+            <!-- Right: Desktop Slider -->
+            <div class="hidden lg:block relative">
+                <div class="relative overflow-hidden rounded-3xl shadow-2xl" style="height:600px;" id="dSlider">
+                    <% if (berita && berita.length > 0) { %>
+                    <% berita.forEach((b, i) => { %>
+                    <div class="hd absolute inset-0 transition-opacity duration-1000" style="opacity:<%= i===0?1:0 %>;z-index:<%= i===0?1:0 %>">
+                        <img src="<%= b.gambar %>" alt="<%= b.judul %>" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent"></div>
+                        <a href="/berita/<%= b.slug %>" class="absolute bottom-0 left-0 right-0 p-8">
+                            <span class="inline-block px-3 py-1 bg-karang-500 text-white text-xs font-bold rounded-full mb-3"><%= b.kategori %></span>
+                            <p class="text-white font-bold text-xl line-clamp-2"><%= b.judul %></p>
+                            <p class="text-gray-300 text-sm mt-2 line-clamp-2"><%= b.ringkasan %></p>
+                        </a>
                     </div>
+                    <% }) %>
+                    <button onclick="hdPrev()" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/20 hover:bg-white/40 backdrop-blur rounded-full flex items-center justify-center"><i class="fas fa-chevron-left text-white"></i></button>
+                    <button onclick="hdNext()" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/20 hover:bg-white/40 backdrop-blur rounded-full flex items-center justify-center"><i class="fas fa-chevron-right text-white"></i></button>
+                    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                        <% berita.forEach((b, i) => { %><button class="hdd w-2.5 h-2.5 rounded-full" style="background:<%= i===0?'white':'rgba(255,255,255,0.4)' %>" onclick="hdGoTo(<%= i %>)"></button><% }) %>
+                    </div>
+                    <% } else { %>
+                    <img src="<%= s.hero_image||'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&h=700&fit=crop' %>" class="w-full h-full object-cover">
+                    <% } %>
                 </div>
                 <div class="absolute inset-0 bg-gradient-to-r from-karang-500 to-taruna-600 rounded-3xl transform rotate-3 opacity-20 -z-10"></div>
             </div>
@@ -64,7 +88,31 @@
     </div>
 </section>
 
-<!-- Latest News Section -->
+<!-- Marquee -->
+<% if (s.marquee_enabled !== '0' && s.marquee_text) { %>
+<div class="overflow-hidden" style="background-color:<%= s.marquee_bg||'#e5792a' %>;padding:10px 0;">
+    <div class="marquee-wrap">
+        <div class="marquee-inner" style="animation-duration:<%= s.marquee_speed||'30' %>s;">
+            <span style="color:<%= s.marquee_text_color||'#ffffff' %>;font-weight:600;font-size:.9rem;padding:0 2rem;">
+                <% if (s.marquee_link) { %><a href="<%= s.marquee_link %>" style="color:inherit;text-decoration:none;"><% } %>
+                <i class="fas fa-bullhorn" style="margin-right:8px;"></i><%= s.marquee_text %>
+                <% if (s.marquee_link) { %></a><% } %>
+            </span>
+            <span style="color:<%= s.marquee_text_color||'#ffffff' %>;font-weight:600;font-size:.9rem;padding:0 2rem;">
+                <i class="fas fa-star" style="margin-right:8px;"></i><%= s.marquee_text %>
+            </span>
+            <span style="color:<%= s.marquee_text_color||'#ffffff' %>;font-weight:600;font-size:.9rem;padding:0 2rem;">
+                <i class="fas fa-bullhorn" style="margin-right:8px;"></i><%= s.marquee_text %>
+            </span>
+            <span style="color:<%= s.marquee_text_color||'#ffffff' %>;font-weight:600;font-size:.9rem;padding:0 2rem;">
+                <i class="fas fa-star" style="margin-right:8px;"></i><%= s.marquee_text %>
+            </span>
+        </div>
+    </div>
+</div>
+<% } %>
+
+<!-- Latest News -->
 <section class="py-24 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-end mb-12">
@@ -72,19 +120,14 @@
                 <div class="inline-block px-4 py-1 bg-karang-100 text-karang-700 rounded-full text-sm font-semibold mb-4">Informasi Terkini</div>
                 <h2 class="text-4xl font-bold text-gray-900">Berita Terbaru</h2>
             </div>
-            <a href="/berita" class="hidden md:flex items-center text-karang-600 font-semibold hover:gap-2 transition-all">
-                Lihat Semua <i class="fas fa-arrow-right ml-2"></i>
-            </a>
+            <a href="/berita" class="hidden md:flex items-center text-karang-600 font-semibold hover:gap-2 transition-all">Lihat Semua <i class="fas fa-arrow-right ml-2"></i></a>
         </div>
-
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <% berita.forEach((item, index) => { %>
             <article class="news-card bg-white rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
                 <div class="relative h-48 overflow-hidden">
                     <img src="<%= item.gambar %>" alt="<%= item.judul %>" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
-                    <% if (index === 0) { %>
-                    <div class="absolute top-4 left-4 px-3 py-1 bg-karang-500 text-white text-xs font-bold rounded-full">TERBARU</div>
-                    <% } %>
+                    <% if (index===0) { %><div class="absolute top-4 left-4 px-3 py-1 bg-karang-500 text-white text-xs font-bold rounded-full">TERBARU</div><% } %>
                 </div>
                 <div class="p-6">
                     <div class="flex items-center gap-4 text-sm text-gray-500 mb-3">
@@ -92,27 +135,20 @@
                         <span><i class="far fa-eye mr-1"></i> <%= item.views.toLocaleString('id-ID') %> views</span>
                     </div>
                     <span class="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs font-semibold rounded mb-2"><%= item.kategori %></span>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2 hover:text-karang-600 transition-colors cursor-pointer line-clamp-2">
-                        <a href="/berita/<%= item.slug %>"><%= item.judul %></a>
-                    </h3>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2 hover:text-karang-600 transition-colors cursor-pointer line-clamp-2"><a href="/berita/<%= item.slug %>"><%= item.judul %></a></h3>
                     <p class="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3"><%= item.ringkasan %></p>
-                    <a href="/berita/<%= item.slug %>" class="inline-flex items-center text-karang-600 font-semibold hover:gap-2 transition-all">
-                        Baca Selengkapnya <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
+                    <a href="/berita/<%= item.slug %>" class="inline-flex items-center text-karang-600 font-semibold hover:gap-2 transition-all">Baca Selengkapnya <i class="fas fa-arrow-right ml-2"></i></a>
                 </div>
             </article>
             <% }) %>
         </div>
-
         <div class="text-center mt-8 md:hidden">
-            <a href="/berita" class="inline-flex items-center px-6 py-3 border-2 border-karang-500 text-karang-600 rounded-full font-semibold hover:bg-karang-500 hover:text-white transition-all">
-                Lihat Semua Berita <i class="fas fa-newspaper ml-2"></i>
-            </a>
+            <a href="/berita" class="inline-flex items-center px-6 py-3 border-2 border-karang-500 text-karang-600 rounded-full font-semibold hover:bg-karang-500 hover:text-white transition-all">Lihat Semua Berita <i class="fas fa-newspaper ml-2"></i></a>
         </div>
     </div>
 </section>
 
-<!-- Activities Preview -->
+<!-- Activities -->
 <section class="py-24 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
@@ -120,32 +156,38 @@
             <h2 class="text-4xl font-bold text-gray-900">Kegiatan Kami</h2>
             <p class="text-gray-600 mt-4 max-w-2xl mx-auto">Berbagai program dan kegiatan yang kami selenggarakan untuk kemajuan pemuda Indonesia</p>
         </div>
-
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <% kegiatan.forEach(item => { %>
             <div class="group relative rounded-2xl overflow-hidden shadow-lg cursor-pointer h-72">
-                <div class="h-full overflow-hidden">
-                    <img src="<%= item.gambar %>" alt="<%= item.judul %>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                </div>
+                <div class="h-full overflow-hidden"><img src="<%= item.gambar %>" alt="<%= item.judul %>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                 <div class="absolute bottom-0 left-0 right-0 p-6">
-                    <span class="inline-block px-3 py-1 
-                        <%= item.kategori === 'sosial' ? 'bg-karang-500' : item.kategori === 'lingkungan' ? 'bg-green-500' : 'bg-taruna-500' %> 
-                        text-white text-xs font-bold rounded-full mb-2 uppercase"><%= item.kategori %></span>
+                    <span class="inline-block px-3 py-1 <%= item.kategori==='sosial'?'bg-karang-500':item.kategori==='lingkungan'?'bg-green-500':'bg-taruna-500' %> text-white text-xs font-bold rounded-full mb-2 uppercase"><%= item.kategori %></span>
                     <h3 class="text-white font-bold text-lg"><%= item.judul %></h3>
                     <p class="text-gray-300 text-sm mt-1"><i class="fas fa-map-marker-alt mr-1"></i> <%= item.lokasi %>, <%= formatDateShort(item.tanggal) %></p>
                 </div>
             </div>
             <% }) %>
         </div>
-
         <div class="text-center mt-12">
-            <a href="/kegiatan" class="inline-flex items-center px-8 py-3 border-2 border-karang-500 text-karang-600 rounded-full font-semibold hover:bg-karang-500 hover:text-white transition-all">
-                Lihat Semua Kegiatan <i class="fas fa-calendar-alt ml-2"></i>
-            </a>
+            <a href="/kegiatan" class="inline-flex items-center px-8 py-3 border-2 border-karang-500 text-karang-600 rounded-full font-semibold hover:bg-karang-500 hover:text-white transition-all">Lihat Semua Kegiatan <i class="fas fa-calendar-alt ml-2"></i></a>
         </div>
     </div>
 </section>
 
 <%- include('partials/footer') %>
 <%- include('partials/scripts') %>
+
+<script>
+// Mobile slider
+var hmCur=0, hmSlides=document.querySelectorAll('.hm'), hmDots=document.querySelectorAll('.hmd');
+function hmGoTo(n){if(!hmSlides.length)return;hmSlides[hmCur].style.opacity=0;hmSlides[hmCur].style.zIndex=0;hmDots[hmCur].style.background='rgba(255,255,255,0.4)';hmCur=(n+hmSlides.length)%hmSlides.length;hmSlides[hmCur].style.opacity=1;hmSlides[hmCur].style.zIndex=1;hmDots[hmCur].style.background='white';}
+function hmNext(){hmGoTo(hmCur+1);}function hmPrev(){hmGoTo(hmCur-1);}
+if(hmSlides.length>1)setInterval(hmNext,4000);
+
+// Desktop slider
+var hdCur=0, hdSlides=document.querySelectorAll('.hd'), hdDots=document.querySelectorAll('.hdd');
+function hdGoTo(n){if(!hdSlides.length)return;hdSlides[hdCur].style.opacity=0;hdSlides[hdCur].style.zIndex=0;hdDots[hdCur].style.background='rgba(255,255,255,0.4)';hdCur=(n+hdSlides.length)%hdSlides.length;hdSlides[hdCur].style.opacity=1;hdSlides[hdCur].style.zIndex=1;hdDots[hdCur].style.background='white';}
+function hdNext(){hdGoTo(hdCur+1);}function hdPrev(){hdGoTo(hdCur-1);}
+if(hdSlides.length>1)setInterval(hdNext,5000);
+</script>

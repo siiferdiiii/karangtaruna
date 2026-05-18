@@ -74,6 +74,63 @@
             </div>
         </div>
 
+        <!-- Warna Tema -->
+        <div class="section-card">
+            <h3 class="card-subtitle" style="margin-bottom:1.25rem;">
+                <i class="fas fa-palette" style="color:#e5792a;margin-right:.5rem;"></i>Warna Tema
+            </h3>
+            <div class="form-group">
+                <label class="form-label">Warna Utama (Tombol, Badge, Link)</label>
+                <div style="display:flex;align-items:center;gap:.75rem;">
+                    <input type="color" name="primary_color" id="primaryColorPicker" value="<%= settings.primary_color||'#e5792a' %>" style="width:48px;height:40px;border:none;border-radius:8px;cursor:pointer;padding:2px;">
+                    <input type="text" id="primaryColorHex" class="form-input" value="<%= settings.primary_color||'#e5792a' %>" placeholder="#e5792a" style="font-family:monospace;max-width:120px;">
+                    <small style="color:#6b7280;">Klik kotak warna untuk memilih</small>
+                </div>
+            </div>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem;">
+                <% [['#e5792a','Oranye'],['#16a34a','Hijau'],['#2563eb','Biru'],['#dc2626','Merah'],['#7c3aed','Ungu'],['#0891b2','Cyan'],['#d97706','Amber'],['#be185d','Pink']].forEach(c => { %>
+                <button type="button" onclick="setPrimaryColor('<%= c[0] %>')" title="<%= c[1] %>" style="width:28px;height:28px;border-radius:6px;background:<%= c[0] %>;border:2px solid #fff;box-shadow:0 0 0 1px #ddd;cursor:pointer;"></button>
+                <% }) %>
+            </div>
+        </div>
+
+        <!-- Marquee -->
+        <div class="section-card">
+            <h3 class="card-subtitle" style="margin-bottom:1.25rem;">
+                <i class="fas fa-scroll" style="color:#e5792a;margin-right:.5rem;"></i>Teks Berjalan (Marquee)
+            </h3>
+            <div class="form-group">
+                <label class="form-label">Aktifkan Marquee</label>
+                <select name="marquee_enabled" class="form-input form-select">
+                    <option value="1" <%= (settings.marquee_enabled!=='0') ? 'selected' : '' %>>Aktif</option>
+                    <option value="0" <%= (settings.marquee_enabled==='0') ? 'selected' : '' %>>Nonaktif</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Teks Marquee</label>
+                <input type="text" name="marquee_text" class="form-input" value="<%= settings.marquee_text %>" placeholder="Selamat datang di website kami...">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Link (opsional, klik teks membuka halaman)</label>
+                <input type="url" name="marquee_link" class="form-input" value="<%= settings.marquee_link %>" placeholder="https://... (kosongkan jika tidak ada)">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+                <div class="form-group">
+                    <label class="form-label">Warna Background</label>
+                    <input type="color" name="marquee_bg" value="<%= settings.marquee_bg||'#e5792a' %>" style="width:100%;height:40px;border:none;border-radius:8px;cursor:pointer;padding:2px;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Warna Teks</label>
+                    <input type="color" name="marquee_text_color" value="<%= settings.marquee_text_color||'#ffffff' %>" style="width:100%;height:40px;border:none;border-radius:8px;cursor:pointer;padding:2px;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Kecepatan (detik)</label>
+                    <input type="number" name="marquee_speed" class="form-input" value="<%= settings.marquee_speed||'25' %>" min="5" max="120" placeholder="25">
+                    <small style="color:#6b7280;">Lebih kecil = lebih cepat</small>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- ── Kolom Kanan ────────────────────────────────────────────────────── -->
@@ -164,5 +221,12 @@ document.getElementById('heroImgInput').addEventListener('change', function() {
         reader.readAsDataURL(file);
     }
 });
+var pc = document.getElementById('primaryColorPicker');
+var ph = document.getElementById('primaryColorHex');
+if(pc && ph){
+    pc.addEventListener('input', function(){ ph.value = this.value; });
+    ph.addEventListener('input', function(){ if(/^#[0-9a-fA-F]{6}$/.test(this.value)) pc.value = this.value; });
+}
+function setPrimaryColor(hex){ if(pc)pc.value=hex; if(ph)ph.value=hex; }
 </script>
 ` }) %>

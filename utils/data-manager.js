@@ -185,7 +185,14 @@ const DEFAULT_SETTINGS = {
     kontak_tiktok: '',
     kontak_facebook: '',
     kontak_whatsapp: '',
-    footer_description: 'Wadah pengembangan generasi muda Kelurahan Tanjung yang aktif, kreatif, dan berkontribusi untuk kemajuan masyarakat dan bangsa.'
+    footer_description: 'Wadah pengembangan generasi muda Kelurahan Tanjung yang aktif, kreatif, dan berkontribusi untuk kemajuan masyarakat dan bangsa.',
+    primary_color: '#e5792a',
+    marquee_enabled: '1',
+    marquee_text: 'Selamat datang di website resmi Karang Taruna Kelurahan Tanjung — Aktif, Kreatif, dan Berkarya untuk Masyarakat!',
+    marquee_link: '',
+    marquee_bg: '#e5792a',
+    marquee_text_color: '#ffffff',
+    marquee_speed: '25'
 };
 
 async function getSettings() {

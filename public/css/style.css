@@ -224,3 +224,13 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 .article-content .ql-font-couriernew { font-family: 'Courier New', Courier, monospace; }
 .article-content .ql-font-verdana { font-family: Verdana, Geneva, sans-serif; }
 .article-content .ql-font-tahoma { font-family: Tahoma, Geneva, sans-serif; }
+
+/* ── Marquee ─────────────────────────────────────────────────────────────────── */
+.marquee-wrap { overflow: hidden; white-space: nowrap; }
+.marquee-inner { display: inline-block; animation: marqueeScroll 30s linear infinite; }
+@keyframes marqueeScroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+.marquee-inner:hover { animation-play-state: paused; }
+
