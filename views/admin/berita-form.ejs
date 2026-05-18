@@ -1,8 +1,6 @@
-<% const isEdit = item !== null; %>
-<%- include('partials/header', { activePage: 'berita', extraHead: `
-<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+<% var isEdit = item !== null; %>
+<%- include('partials/header', { activePage: 'berita', extraHead: '<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">' }) %>
 <style>
-/* Font picker label */
 .ql-snow .ql-picker.ql-font .ql-picker-label::before,
 .ql-snow .ql-picker.ql-font .ql-picker-item::before { content: 'Default'; }
 .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=arial]::before,
@@ -17,7 +15,6 @@
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=verdana]::before { content: 'Verdana'; font-family: Verdana; }
 .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=tahoma]::before,
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=tahoma]::before { content: 'Tahoma'; font-family: Tahoma; }
-/* Apply fonts in editor */
 .ql-font-arial { font-family: Arial, Helvetica, sans-serif; }
 .ql-font-timesnewroman { font-family: 'Times New Roman', Times, serif; }
 .ql-font-georgia { font-family: Georgia, 'Times New Roman', serif; }
@@ -25,7 +22,6 @@
 .ql-font-verdana { font-family: Verdana, Geneva, sans-serif; }
 .ql-font-tahoma { font-family: Tahoma, Geneva, sans-serif; }
 </style>
-` }) %>
 
 <div class="page-header">
     <div>

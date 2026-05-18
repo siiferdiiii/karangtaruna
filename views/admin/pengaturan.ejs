@@ -88,9 +88,9 @@
                 </div>
             </div>
             <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem;">
-                <% [['#e5792a','Oranye'],['#16a34a','Hijau'],['#2563eb','Biru'],['#dc2626','Merah'],['#7c3aed','Ungu'],['#0891b2','Cyan'],['#d97706','Amber'],['#be185d','Pink']].forEach(c => { %>
+                <% [['#e5792a','Oranye'],['#16a34a','Hijau'],['#2563eb','Biru'],['#dc2626','Merah'],['#7c3aed','Ungu'],['#0891b2','Cyan'],['#d97706','Amber'],['#be185d','Pink']].forEach(function(c) { %>
                 <button type="button" onclick="setPrimaryColor('<%= c[0] %>')" title="<%= c[1] %>" style="width:28px;height:28px;border-radius:6px;background:<%= c[0] %>;border:2px solid #fff;box-shadow:0 0 0 1px #ddd;cursor:pointer;"></button>
-                <% }) %>
+                <% }); %>
             </div>
         </div>
 
