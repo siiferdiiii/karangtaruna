@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const supabase = require('../utils/supabase');
+const { authClient } = require('../utils/supabase');
 const {
     getBerita, getBeritaById, createBerita, updateBerita, deleteBerita,
     getKegiatan, getKegiatanById, createKegiatan, updateKegiatan, deleteKegiatan,
@@ -40,26 +41,32 @@ function isGuest(req, res, next) {
 router.get('/login', isGuest, (req, res) => {
     res.render('admin/login', {
         title: 'Login Admin',
-        error: req.flash('error'),
-        success: req.flash('success')
+        error: req.query.error ? decodeURIComponent(req.query.error) : null,
+        success: req.query.success ? decodeURIComponent(req.query.success) : null
     });
 });
 
 router.post('/login', isGuest, async (req, res) => {
     const { email, password } = req.body;
+    if (!email || !password) {
+        return res.redirect('/admin/login?error=' + encodeURIComponent('Email dan password wajib diisi.'));
+    }
     try {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error || !data.user) {
-            req.flash('error', 'Email atau password salah!');
-            return res.redirect('/admin/login');
+        const { data, error } = await authClient.auth.signInWithPassword({ email, password });
+        if (error) {
+            console.error('Supabase auth error:', error.message, error.status);
+            return res.redirect('/admin/login?error=' + encodeURIComponent('Login gagal: ' + error.message));
+        }
+        if (!data.user) {
+            return res.redirect('/admin/login?error=' + encodeURIComponent('User tidak ditemukan.'));
         }
         req.session.isAdmin = true;
         req.session.adminUser = data.user.email;
-        req.flash('success', 'Selamat datang, Admin!');
+        console.log('Login sukses:', data.user.email);
         return res.redirect('/admin/dashboard');
     } catch (err) {
-        req.flash('error', 'Terjadi kesalahan, coba lagi.');
-        res.redirect('/admin/login');
+        console.error('Login exception:', err.message);
+        return res.redirect('/admin/login?error=' + encodeURIComponent('Terjadi kesalahan: ' + err.message));
     }
 });
 
