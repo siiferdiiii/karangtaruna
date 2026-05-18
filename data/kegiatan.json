@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "judul": "Bakti Sosial Ramadhan",
+    "kategori": "sosial",
+    "lokasi": "Jakarta",
+    "tanggal": "2026-03-25",
+    "gambar": "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&h=400&fit=crop",
+    "deskripsi": "Distribusi sembako dan buka puasa bersama untuk masyarakat kurang mampu."
+  },
+  {
+    "id": 2,
+    "judul": "Penanaman 10K Pohon",
+    "kategori": "lingkungan",
+    "lokasi": "Bandung",
+    "tanggal": "2026-04-22",
+    "gambar": "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&h=400&fit=crop",
+    "deskripsi": "Gerakan penghijauan massal di lereng gunung dan area kritis."
+  },
+  {
+    "id": 3,
+    "judul": "Workshop Digital Skill",
+    "kategori": "edukasi",
+    "lokasi": "Surabaya",
+    "tanggal": "2026-05-15",
+    "gambar": "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&h=400&fit=crop",
+    "deskripsi": "Pelatihan digital marketing dan coding untuk pemuda."
+  },
+  {
+    "id": 4,
+    "judul": "Donor Darah Massal",
+    "kategori": "sosial",
+    "lokasi": "Yogyakarta",
+    "tanggal": "2026-06-10",
+    "gambar": "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=600&h=400&fit=crop",
+    "deskripsi": "Aksi donor darah untuk stok darah nasional."
+  },
+  {
+    "id": 5,
+    "judul": "Pelatihan UMKM Online",
+    "kategori": "edukasi",
+    "lokasi": "Semarang",
+    "tanggal": "2026-05-20",
+    "gambar": "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=600&h=400&fit=crop",
+    "deskripsi": "Pelatihan pengelolaan UMKM di marketplace dan sosial media."
+  },
+  {
+    "id": 6,
+    "judul": "Bersih Sungai Brantas",
+    "kategori": "lingkungan",
+    "lokasi": "Malang",
+    "tanggal": "2026-06-05",
+    "gambar": "https://images.unsplash.com/photo-1618477461853-5f8dd68aa1fd?w=600&h=400&fit=crop",
+    "deskripsi": "Aksi bersih sungai Brantas dari sampah plastik."
+  },
+  {
+    "id": 7,
+    "judul": "Pengajian dan Santunan",
+    "kategori": "sosial",
+    "lokasi": "Solo",
+    "tanggal": "2026-04-10",
+    "gambar": "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=600&h=400&fit=crop",
+    "deskripsi": "Pengajian akbar dan santunan anak yatim piatu."
+  },
+  {
+    "id": 8,
+    "judul": "Coding Bootcamp Pemuda",
+    "kategori": "edukasi",
+    "lokasi": "Medan",
+    "tanggal": "2026-07-01",
+    "gambar": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&h=400&fit=crop",
+    "deskripsi": "Bootcamp pemrograman web dan mobile untuk pemuda."
+  }
+]

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin | Karang Taruna Kel. Tanjung</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="login-body">
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">
+                    <img src="/images/logo.jpeg" alt="Logo Karang Taruna" style="width:64px;height:64px;object-fit:cover;border-radius:12px;">
+                </div>
+                <h1 class="login-title">KARANG TARUNA</h1>
+                <p class="login-sub">Kel. Tanjung &bull; Kab. Mempawah</p>
+                <p class="login-desc">Masuk ke Panel Admin</p>
+            </div>
+
+            <% if (error && error.length > 0) { %>
+            <div class="flash-message flash-error mb-4">
+                <i class="fas fa-exclamation-circle"></i>
+                <% if (Array.isArray(error)) { error.forEach(e => { %><%= e %><% }); } else { %><%= error %><% } %>
+            </div>
+            <% } %>
+
+            <form action="/admin/login" method="POST" class="login-form">
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-envelope"></i> Email Admin</label>
+                    <input type="email" name="email" class="form-input" placeholder="admin@karangtaruna.id" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-lock"></i> Password</label>
+                    <div class="input-password-wrapper">
+                        <input type="password" name="password" id="passwordInput" class="form-input" placeholder="Masukkan password" required autocomplete="current-password">
+                        <button type="button" class="toggle-password" onclick="togglePassword()">
+                            <i class="fas fa-eye" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Masuk ke Dashboard
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> Kembali ke Website</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('passwordInput');
+            const icon = document.getElementById('eyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+    </script>
+</body>
+</html>

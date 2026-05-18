@@ -1,0 +1,122 @@
+<%- include('partials/header', { activePage: 'kegiatan', extraHead: '' }) %>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Kelola Kegiatan</h1>
+        <p class="page-sub">Total <span id="jumlahKegiatan"><%= kegiatan.length %></span> kegiatan terdaftar</p>
+    </div>
+    <a href="/admin/kegiatan/tambah" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah Kegiatan</a>
+</div>
+
+<!-- Search & Filter Bar -->
+<div class="section-card" style="margin-bottom:12px;padding:14px 20px;">
+    <div class="filter-bar">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Cari judul kegiatan..." class="form-input" oninput="filterTable()">
+        </div>
+        <div class="filter-group">
+            <select id="filterKategori" class="form-input form-select" onchange="filterTable()">
+                <option value="">Semua Kategori</option>
+                <option value="sosial">Sosial</option>
+                <option value="lingkungan">Lingkungan</option>
+                <option value="edukasi">Edukasi</option>
+                <option value="kreativitas">Kreativitas</option>
+            </select>
+            <select id="filterPendaftaran" class="form-input form-select" onchange="filterTable()">
+                <option value="">Semua Status</option>
+                <option value="buka">Pendaftaran Buka</option>
+                <option value="tutup">Pendaftaran Tutup</option>
+            </select>
+            <button onclick="resetFilter()" class="btn btn-ghost" id="resetBtn" style="display:none">
+                <i class="fas fa-times"></i> Reset
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="section-card">
+    <% if (kegiatan.length === 0) { %>
+    <div class="empty-state-full">
+        <i class="fas fa-calendar-alt"></i>
+        <p>Belum ada kegiatan. <a href="/admin/kegiatan/tambah">Tambah kegiatan pertama</a></p>
+    </div>
+    <% } else { %>
+    <div class="table-wrapper">
+        <table class="data-table" id="kegiatanTable">
+            <thead>
+                <tr>
+                    <th style="width:60px">Gambar</th>
+                    <th>Judul</th>
+                    <th>Kategori</th>
+                    <th>Lokasi</th>
+                    <th>Tanggal</th>
+                    <th>Pendaftaran</th>
+                    <th style="width:100px">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="kegiatanBody">
+                <% kegiatan.forEach(k => { %>
+                <tr data-judul="<%= k.judul.toLowerCase() %>" data-kategori="<%= k.kategori %>" data-pendaftaran="<%= k.buka_pendaftaran ? 'buka' : 'tutup' %>">
+                    <td>
+                        <img src="<%= k.gambar %>" alt="<%= k.judul %>" class="table-thumbnail" onerror="this.src='https://placehold.co/50x40'">
+                    </td>
+                    <td><div class="table-title"><%= k.judul %></div></td>
+                    <td><span class="badge badge-green"><%= k.kategori %></span></td>
+                    <td><%= k.lokasi || '-' %></td>
+                    <td><%= formatDate(k.tanggal) %></td>
+                    <td>
+                        <% if (k.buka_pendaftaran) { %>
+                        <span class="badge badge-success">Buka</span>
+                        <% } else { %>
+                        <span class="badge badge-gray">Tutup</span>
+                        <% } %>
+                    </td>
+                    <td>
+                        <div class="table-actions">
+                            <a href="/admin/kegiatan/edit/<%= k.id %>" class="btn-icon btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
+                            <button class="btn-icon btn-delete delete-btn" title="Hapus"
+                                data-url="/admin/kegiatan/hapus/<%= k.id %>"
+                                data-name="<%= k.judul %>">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        <div class="empty-state" id="noResults" style="display:none;padding:40px">
+            <i class="fas fa-search" style="font-size:32px;display:block;margin-bottom:8px;opacity:0.3"></i>
+            Tidak ada kegiatan yang cocok dengan pencarian.
+        </div>
+    </div>
+    <% } %>
+</div>
+
+<%- include('partials/footer', { extraScript: '' }) %>
+<script>
+function filterTable() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const kat = document.getElementById('filterKategori').value;
+    const pend = document.getElementById('filterPendaftaran').value;
+    const rows = document.querySelectorAll('#kegiatanBody tr');
+    let visible = 0;
+    rows.forEach(row => {
+        const matchQ = !q || (row.dataset.judul||'').includes(q);
+        const matchK = !kat || row.dataset.kategori === kat;
+        const matchP = !pend || row.dataset.pendaftaran === pend;
+        row.style.display = (matchQ && matchK && matchP) ? '' : 'none';
+        if (matchQ && matchK && matchP) visible++;
+    });
+    document.getElementById('jumlahKegiatan').textContent = visible;
+    document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+    document.getElementById('resetBtn').style.display = (q || kat || pend) ? 'inline-flex' : 'none';
+}
+function resetFilter() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('filterKategori').value = '';
+    document.getElementById('filterPendaftaran').value = '';
+    filterTable();
+}
+</script>

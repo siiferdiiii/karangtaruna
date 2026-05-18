@@ -1,0 +1,22 @@
+    </main>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-card">
+        <div class="modal-icon"><i class="fas fa-trash-alt"></i></div>
+        <h3 class="modal-title">Hapus Data?</h3>
+        <p class="modal-text" id="modalText">Apakah Anda yakin ingin menghapus item ini? Tindakan ini tidak dapat dibatalkan.</p>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeDeleteModal()">Batal</button>
+            <form id="deleteForm" method="POST" style="display:inline">
+                <button type="submit" class="btn btn-danger">Ya, Hapus</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="/js/admin.js"></script>
+<%- typeof extraScript !== 'undefined' ? extraScript : '' %>
+</body>
+</html>

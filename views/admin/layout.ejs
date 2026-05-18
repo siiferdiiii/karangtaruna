@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> | Admin Karang Taruna</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+
+<!-- Sidebar -->
+<aside class="admin-sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo">
+            <div class="logo-icon"><i class="fas fa-users"></i></div>
+            <div>
+                <span class="logo-title">KARANG TARUNA</span>
+                <span class="logo-sub">Panel Admin</span>
+            </div>
+        </div>
+        <button class="sidebar-close" id="sidebarClose"><i class="fas fa-times"></i></button>
+    </div>
+
+    <nav class="sidebar-nav">
+        <div class="nav-section-label">MENU UTAMA</div>
+        <a href="/admin/dashboard" class="nav-item <%= typeof activePage !== 'undefined' && activePage === 'dashboard' ? 'active' : '' %>">
+            <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+        </a>
+        <a href="/admin/berita" class="nav-item <%= typeof activePage !== 'undefined' && activePage === 'berita' ? 'active' : '' %>">
+            <i class="fas fa-newspaper"></i> <span>Kelola Berita</span>
+        </a>
+        <a href="/admin/kegiatan" class="nav-item <%= typeof activePage !== 'undefined' && activePage === 'kegiatan' ? 'active' : '' %>">
+            <i class="fas fa-calendar-alt"></i> <span>Kelola Kegiatan</span>
+        </a>
+        <a href="/admin/formulir" class="nav-item <%= typeof activePage !== 'undefined' && activePage === 'formulir' ? 'active' : '' %>">
+            <i class="fas fa-clipboard-list"></i> <span>Data Pendaftaran</span>
+        </a>
+
+        <div class="nav-section-label" style="margin-top:1.5rem">LIHAT WEBSITE</div>
+        <a href="/" target="_blank" class="nav-item">
+            <i class="fas fa-external-link-alt"></i> <span>Buka Website</span>
+        </a>
+        <a href="/admin/logout" class="nav-item nav-logout">
+            <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+        </a>
+    </nav>
+</aside>
+
+<!-- Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Main Content -->
+<div class="admin-main" id="adminMain">
+    <!-- Topbar -->
+    <header class="admin-topbar">
+        <button class="topbar-toggle" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="topbar-title"><%= title %></div>
+        <div class="topbar-user">
+            <div class="user-avatar"><i class="fas fa-user-shield"></i></div>
+            <span><%= typeof adminUser !== 'undefined' ? adminUser : 'Admin' %></span>
+        </div>
+    </header>
+
+    <!-- Flash Messages -->
+    <% if (typeof success !== 'undefined' && success && success.length > 0) { %>
+    <div class="flash-message flash-success" id="flashMsg">
+        <i class="fas fa-check-circle"></i>
+        <% if (Array.isArray(success)) { success.forEach(s => { %><%= s %><% }); } else { %><%= success %><% } %>
+        <button onclick="this.parentElement.remove()" class="flash-close">&times;</button>
+    </div>
+    <% } %>
+    <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+    <div class="flash-message flash-error" id="flashMsg">
+        <i class="fas fa-exclamation-circle"></i>
+        <% if (Array.isArray(error)) { error.forEach(e => { %><%= e %><% }); } else { %><%= error %><% } %>
+        <button onclick="this.parentElement.remove()" class="flash-close">&times;</button>
+    </div>
+    <% } %>
+
+    <!-- Page Content -->
+    <main class="admin-content">
+        <%- body %>
+    </main>
+</div>
+
+<script src="/js/admin.js"></script>
+</body>
+</html>

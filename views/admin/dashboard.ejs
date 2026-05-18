@@ -1,0 +1,116 @@
+<%- include('partials/header', { activePage: 'dashboard', extraHead: '' }) %>
+
+<div class="page-header">
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-sub">Selamat datang kembali, <strong><%= adminUser %></strong>! Berikut ringkasan konten website.</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="stats-grid">
+    <div class="stat-card stat-blue">
+        <div class="stat-icon"><i class="fas fa-newspaper"></i></div>
+        <div class="stat-info">
+            <div class="stat-number"><%= stats.totalBerita %></div>
+            <div class="stat-label">Total Berita</div>
+        </div>
+    </div>
+    <div class="stat-card stat-green">
+        <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+        <div class="stat-info">
+            <div class="stat-number"><%= stats.totalKegiatan %></div>
+            <div class="stat-label">Total Kegiatan</div>
+        </div>
+    </div>
+    <div class="stat-card stat-orange">
+        <div class="stat-icon"><i class="fas fa-eye"></i></div>
+        <div class="stat-info">
+            <div class="stat-number"><%= stats.totalViews.toLocaleString('id-ID') %></div>
+            <div class="stat-label">Total Views</div>
+        </div>
+    </div>
+    <div class="stat-card stat-purple">
+        <div class="stat-icon"><i class="fas fa-users"></i></div>
+        <div class="stat-info">
+            <div class="stat-number"><%= stats.totalRegistrasi %></div>
+            <div class="stat-label">Pendaftar</div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="section-card">
+    <h2 class="section-title">Aksi Cepat</h2>
+    <div class="action-grid">
+        <a href="/admin/berita/tambah" class="action-btn action-primary">
+            <i class="fas fa-plus-circle"></i> Tulis Berita Baru
+        </a>
+        <a href="/admin/kegiatan/tambah" class="action-btn action-success">
+            <i class="fas fa-calendar-plus"></i> Tambah Kegiatan
+        </a>
+        <a href="/admin/formulir" class="action-btn action-info">
+            <i class="fas fa-clipboard-list"></i> Data Pendaftaran
+        </a>
+        <a href="/" target="_blank" class="action-btn action-secondary">
+            <i class="fas fa-external-link-alt"></i> Buka Website
+        </a>
+    </div>
+</div>
+
+<!-- Recent Content -->
+<div class="dashboard-grid">
+    <!-- Berita Terbaru -->
+    <div class="section-card">
+        <div class="card-header-row">
+            <h2 class="section-title">Berita Terbaru</h2>
+            <a href="/admin/berita" class="see-all">Lihat Semua &rarr;</a>
+        </div>
+        <% if (latestBerita.length === 0) { %>
+        <p class="empty-state"><i class="fas fa-inbox"></i> Belum ada berita.</p>
+        <% } else { %>
+        <div class="data-list">
+            <% latestBerita.forEach(b => { %>
+            <div class="data-list-item">
+                <img src="<%= b.gambar %>" alt="<%= b.judul %>" class="list-thumbnail" onerror="this.src='https://via.placeholder.com/60x60'">
+                <div class="list-info">
+                    <div class="list-title"><%= b.judul %></div>
+                    <div class="list-meta">
+                        <span class="badge badge-blue"><%= b.kategori %></span>
+                        <span><%= (b.views || 0).toLocaleString('id-ID') %> views</span>
+                    </div>
+                </div>
+                <a href="/admin/berita/edit/<%= b.id %>" class="btn-icon btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
+            </div>
+            <% }); %>
+        </div>
+        <% } %>
+    </div>
+
+    <!-- Kegiatan Terbaru -->
+    <div class="section-card">
+        <div class="card-header-row">
+            <h2 class="section-title">Kegiatan Terbaru</h2>
+            <a href="/admin/kegiatan" class="see-all">Lihat Semua &rarr;</a>
+        </div>
+        <% if (latestKegiatan.length === 0) { %>
+        <p class="empty-state"><i class="fas fa-inbox"></i> Belum ada kegiatan.</p>
+        <% } else { %>
+        <div class="data-list">
+            <% latestKegiatan.forEach(k => { %>
+            <div class="data-list-item">
+                <img src="<%= k.gambar %>" alt="<%= k.judul %>" class="list-thumbnail" onerror="this.src='https://via.placeholder.com/60x60'">
+                <div class="list-info">
+                    <div class="list-title"><%= k.judul %></div>
+                    <div class="list-meta">
+                        <span class="badge badge-green"><%= k.kategori %></span>
+                        <span><i class="fas fa-map-marker-alt"></i> <%= k.lokasi %></span>
+                    </div>
+                </div>
+                <a href="/admin/kegiatan/edit/<%= k.id %>" class="btn-icon btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
+            </div>
+            <% }); %>
+        </div>
+        <% } %>
+    </div>
+</div>
+
+<%- include('partials/footer', { extraScript: '' }) %>

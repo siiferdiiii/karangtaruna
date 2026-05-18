@@ -1,0 +1,94 @@
+<%- include('partials/header', { activePage: 'galeri', extraHead: '' }) %>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Kelola Galeri</h1>
+        <p class="page-sub">Total <span id="jumlahGambar"><%= galeri.length %></span> gambar di galeri</p>
+    </div>
+    <a href="/admin/galeri/upload" class="btn btn-primary"><i class="fas fa-cloud-upload-alt"></i> Upload Gambar</a>
+</div>
+
+<!-- Filter -->
+<div class="section-card" style="margin-bottom:12px;padding:14px 20px;">
+    <div class="filter-bar">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Cari judul gambar..." class="form-input" oninput="filterGaleri()">
+        </div>
+        <div class="filter-group">
+            <select id="filterKategori" class="form-input form-select" onchange="filterGaleri()">
+                <option value="">Semua Kategori</option>
+                <option value="umum">Umum</option>
+                <option value="kegiatan">Kegiatan</option>
+                <option value="dokumentasi">Dokumentasi</option>
+                <option value="prestasi">Prestasi</option>
+            </select>
+            <button onclick="resetFilter()" class="btn btn-ghost" id="resetBtn" style="display:none">
+                <i class="fas fa-times"></i> Reset
+            </button>
+        </div>
+    </div>
+</div>
+
+<% if (galeri.length === 0) { %>
+<div class="section-card">
+    <div class="empty-state-full">
+        <i class="fas fa-images"></i>
+        <p>Belum ada gambar. <a href="/admin/galeri/upload">Upload gambar pertama</a></p>
+    </div>
+</div>
+<% } else { %>
+<div class="galeri-grid" id="galeriGrid">
+    <% galeri.forEach(g => { %>
+    <div class="galeri-card" data-judul="<%= g.judul.toLowerCase() %>" data-kategori="<%= g.kategori %>">
+        <div class="galeri-img-wrap">
+            <img src="<%= g.gambar_url %>" alt="<%= g.judul %>" class="galeri-img" onerror="this.src='https://placehold.co/300x200'">
+            <div class="galeri-overlay">
+                <a href="<%= g.gambar_url %>" target="_blank" class="btn-icon btn-view" title="Lihat"><i class="fas fa-eye"></i></a>
+                <button class="btn-icon btn-delete delete-btn" title="Hapus"
+                    data-url="/admin/galeri/hapus/<%= g.id %>"
+                    data-name="<%= g.judul %>">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+        <div class="galeri-info">
+            <div class="galeri-title"><%= g.judul %></div>
+            <div class="galeri-meta">
+                <span class="badge badge-blue"><%= g.kategori %></span>
+                <span class="text-muted" style="font-size:11px"><%= formatDate(g.created_at) %></span>
+            </div>
+        </div>
+    </div>
+    <% }); %>
+</div>
+<div class="empty-state" id="noResults" style="display:none;padding:60px 20px;text-align:center">
+    <i class="fas fa-search" style="font-size:36px;display:block;margin-bottom:10px;opacity:0.3"></i>
+    Tidak ada gambar yang cocok.
+</div>
+<% } %>
+
+<%- include('partials/footer', { extraScript: '' }) %>
+<script>
+function filterGaleri() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const kat = document.getElementById('filterKategori').value;
+    const cards = document.querySelectorAll('.galeri-card');
+    let visible = 0;
+    cards.forEach(card => {
+        const matchQ = !q || (card.dataset.judul||'').includes(q);
+        const matchK = !kat || card.dataset.kategori === kat;
+        card.style.display = (matchQ && matchK) ? '' : 'none';
+        if (matchQ && matchK) visible++;
+    });
+    document.getElementById('jumlahGambar').textContent = visible;
+    const noResults = document.getElementById('noResults');
+    if (noResults) noResults.style.display = visible === 0 ? 'block' : 'none';
+    document.getElementById('resetBtn').style.display = (q || kat) ? 'inline-flex' : 'none';
+}
+function resetFilter() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('filterKategori').value = '';
+    filterGaleri();
+}
+</script>

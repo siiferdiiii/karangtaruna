@@ -1,0 +1,146 @@
+<% const isEdit = item !== null; %>
+<%- include('partials/header', { activePage: 'berita', extraHead: '<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">' }) %>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><%= isEdit ? 'Edit Berita' : 'Tulis Berita Baru' %></h1>
+        <p class="page-sub"><% if (isEdit) { %>Mengedit: <strong><%= item.judul %></strong><% } else { %>Isi form di bawah untuk menambah berita baru<% } %></p>
+    </div>
+    <a href="/admin/berita" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Kembali</a>
+</div>
+
+<form action="/admin/berita/<%= isEdit ? 'edit/' + item.id : 'tambah' %>" method="POST" enctype="multipart/form-data" class="form-page" id="beritaForm">
+    <div class="form-grid">
+        <!-- Kolom Kiri -->
+        <div class="form-main">
+            <div class="section-card">
+                <div class="form-group">
+                    <label class="form-label" for="judulInput">Judul Berita <span class="required">*</span></label>
+                    <input type="text" name="judul" id="judulInput" class="form-input" value="<%= isEdit ? item.judul : '' %>" placeholder="Masukkan judul berita..." required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="slugInput">Slug URL <span class="required">*</span></label>
+                    <div class="input-prefix-wrap">
+                        <span class="input-prefix">/berita/</span>
+                        <input type="text" name="slug" id="slugInput" class="form-input" value="<%= isEdit ? item.slug : '' %>" placeholder="judul-berita-otomatis" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ringkasan <span class="required">*</span></label>
+                    <textarea name="ringkasan" class="form-input form-textarea" rows="3" placeholder="Ringkasan singkat berita..." required><%= isEdit ? item.ringkasan : '' %></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Konten Lengkap <span class="required">*</span></label>
+                    <div id="quill-editor" style="min-height:320px;"></div>
+                    <input type="hidden" name="konten" id="kontenInput">
+                </div>
+            </div>
+        </div>
+
+        <!-- Kolom Kanan -->
+        <div class="form-sidebar">
+            <div class="section-card">
+                <h3 class="card-subtitle">Pengaturan</h3>
+                <div class="form-group">
+                    <label class="form-label">Kategori <span class="required">*</span></label>
+                    <select name="kategori" class="form-input form-select" required>
+                        <% ['Edukasi','Lingkungan','Sosial','Kreativitas'].forEach(function(kat) { %>
+                        <option value="<%= kat %>" <%= isEdit && item.kategori === kat ? 'selected' : '' %>><%= kat %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Penulis</label>
+                    <input type="text" name="penulis" class="form-input" value="<%= isEdit ? item.penulis : 'Admin' %>" placeholder="Nama penulis">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tags <small>(pisah koma)</small></label>
+                    <input type="text" name="tag" class="form-input" value="<%= isEdit && item.tag ? item.tag.join(', ') : '' %>" placeholder="pemuda, sosial, kegiatan">
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h3 class="card-subtitle">Gambar Utama</h3>
+                <% if (isEdit && item.gambar) { %>
+                <div id="previewBox">
+                    <img id="imgPreview" src="<%= item.gambar %>" alt="Preview" class="img-preview">
+                </div>
+                <% } else { %>
+                <div id="previewBox" class="hidden">
+                    <img id="imgPreview" src="" alt="Preview" class="img-preview">
+                </div>
+                <% } %>
+                <label class="upload-area" for="gambarInput">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Klik atau drag gambar ke sini</span>
+                    <small>JPG, PNG, WebP — Maks. 5MB</small>
+                    <input type="file" name="gambar" id="gambarInput" accept="image/*" style="display:none">
+                </label>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-full">
+                    <i class="fas fa-save"></i> <%= isEdit ? 'Simpan Perubahan' : 'Publikasikan Berita' %>
+                </button>
+                <a href="/admin/berita" class="btn btn-ghost btn-full">Batal</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<%- include('partials/footer', { extraScript: '' }) %>
+
+<!-- Quill Editor -->
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script>
+    var quill = new Quill('#quill-editor', {
+        theme: 'snow',
+        placeholder: 'Tulis konten berita di sini...',
+        modules: {
+            toolbar: [
+                [{ header: [1,2,3,false] }],
+                ['bold','italic','underline','strike'],
+                [{ list:'ordered' },{ list:'bullet' }],
+                ['link','image','blockquote','code-block'],
+                [{ color:[] },{ background:[] }],
+                ['clean']
+            ]
+        }
+    });
+
+    // Set initial content jika edit
+    <% if (isEdit && item.konten) { %>
+    quill.root.innerHTML = <%- JSON.stringify(item.konten) %>;
+    <% } %>
+
+    // Submit: copy quill content ke hidden input
+    document.getElementById('beritaForm').addEventListener('submit', function() {
+        document.getElementById('kontenInput').value = quill.root.innerHTML;
+    });
+
+    // Auto-generate slug dari judul
+    var slugEdited = <%= isEdit ? 'true' : 'false' %>;
+    document.getElementById('judulInput').addEventListener('input', function() {
+        if (!slugEdited) {
+            document.getElementById('slugInput').value = this.value
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g,'')
+                .trim()
+                .replace(/\s+/g,'-');
+        }
+    });
+    document.getElementById('slugInput').addEventListener('input', function() { slugEdited = true; });
+
+    // Image preview
+    document.getElementById('gambarInput').addEventListener('change', function() {
+        var file = this.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('imgPreview').src = e.target.result;
+                document.getElementById('previewBox').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>

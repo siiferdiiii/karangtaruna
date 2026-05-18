@@ -1,0 +1,146 @@
+<% const isEdit = item !== null; %>
+<%- include('partials/header', { activePage: 'kegiatan', extraHead: '<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">' }) %>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title"><%= isEdit ? 'Edit Kegiatan' : 'Tambah Kegiatan Baru' %></h1>
+        <p class="page-sub"><% if (isEdit) { %>Mengedit: <strong><%= item.judul %></strong><% } else { %>Isi form di bawah untuk menambah kegiatan baru<% } %></p>
+    </div>
+    <a href="/admin/kegiatan" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Kembali</a>
+</div>
+
+<form action="/admin/kegiatan/<%= isEdit ? 'edit/' + item.id : 'tambah' %>" method="POST" enctype="multipart/form-data" class="form-page" id="kegiatanForm">
+    <div class="form-grid">
+        <!-- Kolom Kiri -->
+        <div class="form-main">
+            <div class="section-card">
+                <div class="form-group">
+                    <label class="form-label">Judul Kegiatan <span class="required">*</span></label>
+                    <input type="text" name="judul" class="form-input" value="<%= isEdit ? item.judul : '' %>" placeholder="Nama kegiatan..." required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Kategori <span class="required">*</span></label>
+                        <select name="kategori" class="form-input form-select" required>
+                            <% ['sosial','lingkungan','edukasi','kreativitas'].forEach(function(kat) { %>
+                            <option value="<%= kat %>" <%= isEdit && item.kategori === kat ? 'selected' : '' %>><%= kat.charAt(0).toUpperCase() + kat.slice(1) %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Lokasi <span class="required">*</span></label>
+                        <input type="text" name="lokasi" class="form-input" value="<%= isEdit ? item.lokasi : '' %>" placeholder="Balai Kelurahan, dll." required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tanggal Pelaksanaan <span class="required">*</span></label>
+                    <input type="date" name="tanggal" class="form-input" value="<%= isEdit ? item.tanggal : '' %>" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Deskripsi Kegiatan <span class="required">*</span></label>
+                    <div id="quill-editor" style="min-height:260px;"></div>
+                    <input type="hidden" name="deskripsi" id="deskripsiInput">
+                </div>
+            </div>
+
+            <!-- Pendaftaran Online -->
+            <div class="section-card">
+                <h3 class="card-subtitle"><i class="fas fa-clipboard-list"></i> Pendaftaran Online</h3>
+                <div class="toggle-group">
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="buka_pendaftaran" id="bukaPendaftaran" <%= isEdit && item.buka_pendaftaran ? 'checked' : '' %>>
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <div>
+                        <strong>Aktifkan Formulir Pendaftaran</strong>
+                        <p class="help-text">Jika diaktifkan, warga bisa mendaftar kegiatan ini secara online melalui halaman website publik.</p>
+                    </div>
+                </div>
+                <div id="pendaftaranInfo" style="display:<%= isEdit && item.buka_pendaftaran ? 'block' : 'none' %>; margin-top:1rem;">
+                    <div class="info-box">
+                        <i class="fas fa-info-circle"></i>
+                        Form pendaftaran akan tersedia di halaman publik kegiatan ini.<br>
+                        Data pendaftaran bisa dilihat di menu <a href="/admin/formulir">Data Pendaftaran</a>.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kolom Kanan -->
+        <div class="form-sidebar">
+            <div class="section-card">
+                <h3 class="card-subtitle">Gambar Kegiatan</h3>
+                <% if (isEdit && item.gambar) { %>
+                <div id="previewBox">
+                    <img id="imgPreview" src="<%= item.gambar %>" alt="Preview" class="img-preview">
+                </div>
+                <% } else { %>
+                <div id="previewBox" class="hidden">
+                    <img id="imgPreview" src="" alt="Preview" class="img-preview">
+                </div>
+                <% } %>
+                <label class="upload-area" for="gambarInput">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Klik atau drag gambar ke sini</span>
+                    <small>JPG, PNG, WebP — Maks. 5MB</small>
+                    <input type="file" name="gambar" id="gambarInput" accept="image/*" style="display:none">
+                </label>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-full">
+                    <i class="fas fa-save"></i> <%= isEdit ? 'Simpan Perubahan' : 'Simpan Kegiatan' %>
+                </button>
+                <a href="/admin/kegiatan" class="btn btn-ghost btn-full">Batal</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<%- include('partials/footer', { extraScript: '' }) %>
+
+<!-- Quill Editor -->
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script>
+    var quill = new Quill('#quill-editor', {
+        theme: 'snow',
+        placeholder: 'Deskripsi lengkap kegiatan...',
+        modules: {
+            toolbar: [
+                [{ header: [1,2,3,false] }],
+                ['bold','italic','underline'],
+                [{ list:'ordered' },{ list:'bullet' }],
+                ['link','blockquote'],
+                ['clean']
+            ]
+        }
+    });
+
+    // Set initial content jika edit
+    <% if (isEdit && item.deskripsi) { %>
+    quill.root.innerHTML = <%- JSON.stringify(item.deskripsi) %>;
+    <% } %>
+
+    // Submit: copy quill content ke hidden input
+    document.getElementById('kegiatanForm').addEventListener('submit', function() {
+        document.getElementById('deskripsiInput').value = quill.root.innerHTML;
+    });
+
+    // Image preview
+    document.getElementById('gambarInput').addEventListener('change', function() {
+        var file = this.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('imgPreview').src = e.target.result;
+                document.getElementById('previewBox').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Toggle pendaftaran info
+    document.getElementById('bukaPendaftaran').addEventListener('change', function() {
+        document.getElementById('pendaftaranInfo').style.display = this.checked ? 'block' : 'none';
+    });
+</script>

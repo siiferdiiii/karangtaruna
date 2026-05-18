@@ -1,0 +1,39 @@
+<nav id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-transparent top-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="/images/logo.jpeg" alt="Logo Karang Taruna" class="w-12 h-12 rounded-xl object-cover shadow-lg">
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900 leading-tight">KARANG TARUNA</h1>
+                    <p class="text-xs text-gray-600 font-medium">Kel. Tanjung &bull; Kab. Mempawah</p>
+                </div>
+            </a>
+
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="/" class="<%= activeRoute(route, '/') %> font-medium transition-colors">Beranda</a>
+                <a href="/tentang" class="<%= activeRoute(route, '/tentang') %> font-medium transition-colors">Tentang</a>
+                <a href="/berita" class="<%= activeRoute(route, '/berita') %> font-medium transition-colors">Berita</a>
+                <a href="/kegiatan" class="<%= activeRoute(route, '/kegiatan') %> font-medium transition-colors">Kegiatan</a>
+                <a href="/galeri" class="<%= activeRoute(route, '/galeri') %> font-medium transition-colors">Galeri</a>
+                <a href="/kontak" class="px-6 py-2.5 bg-gradient-to-r from-karang-500 to-taruna-600 text-white rounded-full font-medium hover:shadow-lg hover:scale-105 transition-all">
+                    Hubungi Kami
+                </a>
+            </div>
+
+            <button id="mobile-menu-btn" class="md:hidden text-gray-700 text-2xl focus:outline-none">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="mobile-menu" class="hidden md:hidden bg-white shadow-xl border-t">
+        <div class="px-4 py-4 space-y-3">
+            <a href="/" class="block py-2 <%= activeRoute(route, '/') %> font-medium">Beranda</a>
+            <a href="/tentang" class="block py-2 <%= activeRoute(route, '/tentang') %> font-medium">Tentang</a>
+            <a href="/berita" class="block py-2 <%= activeRoute(route, '/berita') %> font-medium">Berita</a>
+            <a href="/kegiatan" class="block py-2 <%= activeRoute(route, '/kegiatan') %> font-medium">Kegiatan</a>
+            <a href="/galeri" class="block py-2 <%= activeRoute(route, '/galeri') %> font-medium">Galeri</a>
+            <a href="/kontak" class="block py-2 text-karang-600 font-bold">Hubungi Kami</a>
+        </div>
+    </div>
+</nav>

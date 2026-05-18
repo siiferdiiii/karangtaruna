@@ -1,0 +1,114 @@
+<%- include('partials/header', { activePage: 'berita', extraHead: '' }) %>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Kelola Berita</h1>
+        <p class="page-sub">Total <span id="jumlahBerita"><%= berita.length %></span> berita terdaftar</p>
+    </div>
+    <a href="/admin/berita/tambah" class="btn btn-primary"><i class="fas fa-plus"></i> Tulis Berita Baru</a>
+</div>
+
+<!-- Search & Filter Bar -->
+<div class="section-card" style="margin-bottom:12px;padding:14px 20px;">
+    <div class="filter-bar">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Cari judul berita..." class="form-input" oninput="filterTable()">
+        </div>
+        <div class="filter-group">
+            <select id="filterKategori" class="form-input form-select" onchange="filterTable()">
+                <option value="">Semua Kategori</option>
+                <option value="Edukasi">Edukasi</option>
+                <option value="Lingkungan">Lingkungan</option>
+                <option value="Sosial">Sosial</option>
+                <option value="Kreativitas">Kreativitas</option>
+            </select>
+            <button onclick="resetFilter()" class="btn btn-ghost" id="resetBtn" style="display:none">
+                <i class="fas fa-times"></i> Reset
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="section-card">
+    <% if (berita.length === 0) { %>
+    <div class="empty-state-full">
+        <i class="fas fa-newspaper"></i>
+        <p>Belum ada berita. <a href="/admin/berita/tambah">Tulis berita pertama</a></p>
+    </div>
+    <% } else { %>
+    <div class="table-wrapper">
+        <table class="data-table" id="beritaTable">
+            <thead>
+                <tr>
+                    <th style="width:60px">Gambar</th>
+                    <th>Judul</th>
+                    <th>Kategori</th>
+                    <th>Penulis</th>
+                    <th>Tanggal</th>
+                    <th>Views</th>
+                    <th style="width:120px">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="beritaBody">
+                <% berita.forEach(b => { %>
+                <tr data-judul="<%= b.judul.toLowerCase() %>" data-kategori="<%= b.kategori %>">
+                    <td>
+                        <img src="<%= b.gambar %>" alt="<%= b.judul %>" class="table-thumbnail" onerror="this.src='https://placehold.co/50x40'">
+                    </td>
+                    <td>
+                        <div class="table-title"><%= b.judul %></div>
+                        <div class="table-slug"><%= b.slug %></div>
+                    </td>
+                    <td><span class="badge badge-blue"><%= b.kategori %></span></td>
+                    <td><%= b.penulis || '-' %></td>
+                    <td><%= formatDate(b.tanggal) %></td>
+                    <td><%= (b.views || 0).toLocaleString('id-ID') %></td>
+                    <td>
+                        <div class="table-actions">
+                            <a href="/berita/<%= b.slug %>" target="_blank" class="btn-icon btn-view" title="Lihat"><i class="fas fa-eye"></i></a>
+                            <a href="/admin/berita/edit/<%= b.id %>" class="btn-icon btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
+                            <button class="btn-icon btn-delete delete-btn" title="Hapus"
+                                data-url="/admin/berita/hapus/<%= b.id %>"
+                                data-name="<%= b.judul %>">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        <div class="empty-state" id="noResults" style="display:none;padding:40px">
+            <i class="fas fa-search" style="font-size:32px;display:block;margin-bottom:8px;opacity:0.3"></i>
+            Tidak ada berita yang cocok dengan pencarian.
+        </div>
+    </div>
+    <% } %>
+</div>
+
+<%- include('partials/footer', { extraScript: '' }) %>
+<script>
+function filterTable() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const kat = document.getElementById('filterKategori').value;
+    const rows = document.querySelectorAll('#beritaBody tr');
+    let visible = 0;
+    rows.forEach(row => {
+        const judul = row.dataset.judul || '';
+        const kategori = row.dataset.kategori || '';
+        const matchQ = !q || judul.includes(q);
+        const matchK = !kat || kategori === kat;
+        row.style.display = (matchQ && matchK) ? '' : 'none';
+        if (matchQ && matchK) visible++;
+    });
+    document.getElementById('jumlahBerita').textContent = visible;
+    document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+    document.getElementById('resetBtn').style.display = (q || kat) ? 'inline-flex' : 'none';
+}
+function resetFilter() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('filterKategori').value = '';
+    filterTable();
+}
+</script>

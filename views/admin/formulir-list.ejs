@@ -1,0 +1,107 @@
+<%- include('partials/header', { activePage: 'formulir', extraHead: '' }) %>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Data Pendaftaran</h1>
+        <p class="page-sub">Total <span id="jumlahReg"><%= registrasi.length %></span> data pendaftaran masuk</p>
+    </div>
+</div>
+
+<!-- Search & Filter -->
+<div class="section-card" style="margin-bottom:12px;padding:14px 20px;">
+    <div class="filter-bar">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Cari nama pendaftar..." class="form-input" oninput="filterTable()">
+        </div>
+        <div class="filter-group">
+            <select id="filterJenis" class="form-input form-select" onchange="filterTable()">
+                <option value="">Semua Jenis</option>
+                <option value="anggota">Pendaftaran Anggota</option>
+                <option value="kegiatan">Pendaftaran Kegiatan</option>
+            </select>
+            <button onclick="resetFilter()" class="btn btn-ghost" id="resetBtn" style="display:none">
+                <i class="fas fa-times"></i> Reset
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="section-card">
+    <% if (registrasi.length === 0) { %>
+    <div class="empty-state-full">
+        <i class="fas fa-clipboard-list"></i>
+        <p>Belum ada data pendaftaran yang masuk.</p>
+    </div>
+    <% } else { %>
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Jenis</th>
+                    <th>Nama Lengkap</th>
+                    <th>Email / No HP</th>
+                    <th>Referensi</th>
+                    <th>Tanggal Daftar</th>
+                    <th style="width:80px">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="regBody">
+                <% registrasi.forEach(r => { %>
+                <tr data-nama="<%= r.nama.toLowerCase() %>" data-jenis="<%= r.jenis %>">
+                    <td>
+                        <% if (r.jenis === 'anggota') { %>
+                        <span class="badge badge-purple">Anggota</span>
+                        <% } else { %>
+                        <span class="badge badge-blue">Kegiatan</span>
+                        <% } %>
+                    </td>
+                    <td><strong><%= r.nama %></strong></td>
+                    <td>
+                        <div><%= r.email || '-' %></div>
+                        <div class="table-slug"><%= r.no_hp || '' %></div>
+                    </td>
+                    <td><%= r.referensi || '-' %></td>
+                    <td><%= formatDate(r.tanggal_daftar) %></td>
+                    <td>
+                        <button class="btn-icon btn-delete delete-btn" title="Hapus"
+                            data-url="/admin/formulir/hapus/<%= r.id %>"
+                            data-name="<%= r.nama %>">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        <div class="empty-state" id="noResults" style="display:none;padding:40px">
+            <i class="fas fa-search" style="font-size:32px;display:block;margin-bottom:8px;opacity:0.3"></i>
+            Tidak ada data yang cocok.
+        </div>
+    </div>
+    <% } %>
+</div>
+
+<%- include('partials/footer', { extraScript: '' }) %>
+<script>
+function filterTable() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const jenis = document.getElementById('filterJenis').value;
+    const rows = document.querySelectorAll('#regBody tr');
+    let visible = 0;
+    rows.forEach(row => {
+        const matchQ = !q || (row.dataset.nama||'').includes(q);
+        const matchJ = !jenis || row.dataset.jenis === jenis;
+        row.style.display = (matchQ && matchJ) ? '' : 'none';
+        if (matchQ && matchJ) visible++;
+    });
+    document.getElementById('jumlahReg').textContent = visible;
+    document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+    document.getElementById('resetBtn').style.display = (q || jenis) ? 'inline-flex' : 'none';
+}
+function resetFilter() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('filterJenis').value = '';
+    filterTable();
+}
+</script>
