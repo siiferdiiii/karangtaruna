@@ -14,7 +14,10 @@ const {
 // ─── Multer: simpan di memory lalu upload ke Supabase Storage ─────────────────
 const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: 5 * 1024 * 1024 },
+    limits: {
+        fileSize: 5 * 1024 * 1024,    // 5MB per file
+        fieldSize: 25 * 1024 * 1024   // 25MB untuk field teks (konten Quill)
+    },
     fileFilter: (req, file, cb) => {
         const allowed = /jpeg|jpg|png|webp|gif/;
         if (allowed.test(file.mimetype)) cb(null, true);
