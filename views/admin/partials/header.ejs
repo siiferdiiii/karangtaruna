@@ -68,15 +68,13 @@
     <!-- Flash Messages -->
     <% if (typeof success !== 'undefined' && success && success.length > 0) { %>
     <div class="flash-message flash-success" id="flashMsg">
-        <i class="fas fa-check-circle"></i>
-        <% success.forEach(s => { %><%= s %><% }); %>
+        <i class="fas fa-check-circle"></i> <%= success %>
         <button onclick="this.parentElement.remove()" class="flash-close">&times;</button>
     </div>
     <% } %>
     <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
     <div class="flash-message flash-error" id="flashMsg">
-        <i class="fas fa-exclamation-circle"></i>
-        <% error.forEach(e => { %><%= e %><% }); %>
+        <i class="fas fa-exclamation-circle"></i> <%= error %>
         <button onclick="this.parentElement.remove()" class="flash-close">&times;</button>
     </div>
     <% } %>
