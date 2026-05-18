@@ -13,16 +13,16 @@
             <div class="space-y-8">
                 <div class="inline-flex items-center px-4 py-2 bg-karang-100 text-karang-700 rounded-full text-sm font-semibold">
                     <span class="w-2 h-2 bg-karang-500 rounded-full mr-2 animate-pulse"></span>
-                    Media Informasi Resmi
+                    <%= s.hero_badge || 'Media Informasi Resmi' %>
                 </div>
 
                 <h1 class="text-5xl lg:text-7xl font-bold leading-tight">
-                    Generasi Muda <br>
-                    <span class="bg-gradient-to-r from-karang-500 via-karang-600 to-taruna-600 bg-clip-text text-transparent">Indonesia Emas</span>
+                    <%= s.hero_title_line1 || 'Generasi Muda' %> <br>
+                    <span class="bg-gradient-to-r from-karang-500 via-karang-600 to-taruna-600 bg-clip-text text-transparent"><%= s.hero_title_line2 || 'Indonesia Emas' %></span>
                 </h1>
 
                 <p class="text-lg text-gray-600 leading-relaxed max-w-xl">
-                    Karang Taruna adalah organisasi kepemudaan yang menjadi wadah pengembangan generasi muda untuk berkontribusi aktif dalam pembangunan masyarakat, bangsa, dan negara.
+                    <%= s.hero_description || 'Karang Taruna adalah organisasi kepemudaan yang menjadi wadah pengembangan generasi muda.' %>
                 </p>
 
                 <div class="flex flex-wrap gap-4">
@@ -35,17 +35,17 @@
                 </div>
 
                 <div class="flex items-center gap-8 pt-4">
-                    <div><p class="text-3xl font-bold text-gray-900">500+</p><p class="text-sm text-gray-500">Organisasi Aktif</p></div>
+                    <div><p class="text-3xl font-bold text-gray-900"><%= s.stat1_number || '500+' %></p><p class="text-sm text-gray-500"><%= s.stat1_label || 'Organisasi Aktif' %></p></div>
                     <div class="w-px h-12 bg-gray-300"></div>
-                    <div><p class="text-3xl font-bold text-gray-900">10K+</p><p class="text-sm text-gray-500">Anggota Terdaftar</p></div>
+                    <div><p class="text-3xl font-bold text-gray-900"><%= s.stat2_number || '10K+' %></p><p class="text-sm text-gray-500"><%= s.stat2_label || 'Anggota Terdaftar' %></p></div>
                     <div class="w-px h-12 bg-gray-300"></div>
-                    <div><p class="text-3xl font-bold text-gray-900">50+</p><p class="text-sm text-gray-500">Program Tahunan</p></div>
+                    <div><p class="text-3xl font-bold text-gray-900"><%= s.stat3_number || '50+' %></p><p class="text-sm text-gray-500"><%= s.stat3_label || 'Program Tahunan' %></p></div>
                 </div>
             </div>
 
             <div class="relative">
                 <div class="relative z-10" style="animation: float 6s ease-in-out infinite;">
-                    <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&h=700&fit=crop" alt="Youth Activity" class="rounded-3xl shadow-2xl w-full object-cover h-[500px] lg:h-[600px]">
+                    <img src="<%= s.hero_image || 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&h=700&fit=crop' %>" alt="Youth Activity" class="rounded-3xl shadow-2xl w-full object-cover h-[500px] lg:h-[600px]">
                     <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl">
                         <div class="flex items-center gap-3">
                             <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">

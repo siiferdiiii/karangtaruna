@@ -165,6 +165,49 @@ async function ensureUniqueSlugDB(slug, excludeId = null) {
     return uniqueSlug;
 }
 
+
+// ── SETTINGS ─────────────────────────────────────────────────────────────────
+
+// Default settings jika belum ada di DB
+const DEFAULT_SETTINGS = {
+    hero_badge: 'Media Informasi Resmi',
+    hero_title_line1: 'Generasi Muda',
+    hero_title_line2: 'Indonesia Emas',
+    hero_description: 'Karang Taruna adalah organisasi kepemudaan yang menjadi wadah pengembangan generasi muda untuk berkontribusi aktif dalam pembangunan masyarakat, bangsa, dan negara.',
+    hero_image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&h=700&fit=crop',
+    stat1_number: '500+', stat1_label: 'Organisasi Aktif',
+    stat2_number: '10K+', stat2_label: 'Anggota Terdaftar',
+    stat3_number: '50+',  stat3_label: 'Program Tahunan',
+    kontak_alamat: 'Jl. Tanjung No. 1, Kelurahan Tanjung, Kabupaten Mempawah, Kalimantan Barat',
+    kontak_phone: '+62 811-5700-000',
+    kontak_email: 'karangtaruna.tanjung@gmail.com',
+    kontak_instagram: '',
+    kontak_tiktok: '',
+    kontak_facebook: '',
+    kontak_whatsapp: '',
+    footer_description: 'Wadah pengembangan generasi muda Kelurahan Tanjung yang aktif, kreatif, dan berkontribusi untuk kemajuan masyarakat dan bangsa.'
+};
+
+async function getSettings() {
+    try {
+        const { data, error } = await supabase.from('settings').select('key, value');
+        if (error || !data) return { ...DEFAULT_SETTINGS };
+        const result = { ...DEFAULT_SETTINGS };
+        data.forEach(row => { result[row.key] = row.value; });
+        return result;
+    } catch (e) {
+        return { ...DEFAULT_SETTINGS };
+    }
+}
+
+async function updateSettings(settingsObj) {
+    const rows = Object.entries(settingsObj).map(([key, value]) => ({ key, value: value || '' }));
+    for (const row of rows) {
+        await supabase.from('settings').upsert(row, { onConflict: 'key' });
+    }
+    return true;
+}
+
 module.exports = {
     getBerita, getBeritaById, getBeritaBySlug, incrementBeritaViews,
     createBerita, updateBerita, deleteBerita,
@@ -172,5 +215,6 @@ module.exports = {
     getRegistrasi, createRegistrasi, deleteRegistrasi,
     getGaleri, createGaleri, deleteGaleriItem,
     uploadImage, deleteImage,
-    generateSlug, ensureUniqueSlugDB
+    generateSlug, ensureUniqueSlugDB,
+    getSettings, updateSettings
 };

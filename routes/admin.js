@@ -9,7 +9,8 @@ const {
     getRegistrasi, deleteRegistrasi,
     getGaleri, createGaleri, deleteGaleriItem,
     uploadImage, deleteImage,
-    generateSlug, ensureUniqueSlugDB
+    generateSlug, ensureUniqueSlugDB,
+    getSettings, updateSettings
 } = require('../utils/data-manager');
 
 // ─── Multer (memory → Supabase Storage) ──────────────────────────────────────
@@ -304,6 +305,41 @@ router.post('/galeri/hapus/:id', isAuthenticated, async (req, res) => {
         res.redirect('/admin/galeri?success=' + encodeURIComponent('Gambar berhasil dihapus.'));
     } catch (err) {
         res.redirect('/admin/galeri?error=' + encodeURIComponent('Gagal menghapus.'));
+    }
+});
+
+
+// ─── PENGATURAN WEBSITE ───────────────────────────────────────────────────────
+router.get('/pengaturan', isAuthenticated, async (req, res) => {
+    try {
+        const settings = await getSettings();
+        res.render('admin/pengaturan', {
+            title: 'Pengaturan Website', adminUser: req.adminUser, settings,
+            success: req.query.success ? decodeURIComponent(req.query.success) : null,
+            error: req.query.error ? decodeURIComponent(req.query.error) : null
+        });
+    } catch (err) {
+        res.redirect('/admin/dashboard?error=' + encodeURIComponent('Gagal memuat pengaturan.'));
+    }
+});
+
+router.post('/pengaturan', isAuthenticated, upload.single('hero_image_file'), async (req, res) => {
+    try {
+        const body = req.body;
+        // Jika ada upload foto hero baru
+        if (req.file) {
+            body.hero_image = await uploadImage(req.file.buffer, req.file.originalname, req.file.mimetype);
+        }
+        // Hapus field upload dari body (bukan setting)
+        delete body.hero_image_file;
+        await updateSettings(body);
+        // Reload settings ke app.locals
+        const { getSettings: gs } = require('../utils/data-manager');
+        require('../server') // noop, just for clarity
+        res.redirect('/admin/pengaturan?success=' + encodeURIComponent('Pengaturan berhasil disimpan!'));
+    } catch (err) {
+        console.error('Pengaturan error:', err);
+        res.redirect('/admin/pengaturan?error=' + encodeURIComponent('Gagal menyimpan: ' + err.message));
     }
 });
 

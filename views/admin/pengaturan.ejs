@@ -1,0 +1,168 @@
+<%- include('partials/header', { activePage: 'pengaturan', extraHead: '' }) %>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Pengaturan Website</h1>
+        <p class="page-sub">Kelola konten beranda, informasi kontak, dan tampilan website.</p>
+    </div>
+</div>
+
+<form action="/admin/pengaturan" method="POST" enctype="multipart/form-data" id="settingsForm">
+<div class="form-grid">
+
+    <!-- ── Kolom Kiri ─────────────────────────────────────────────────────── -->
+    <div class="form-main" style="display:flex;flex-direction:column;gap:1.5rem;">
+
+        <!-- Beranda Hero -->
+        <div class="section-card">
+            <h3 class="card-subtitle" style="margin-bottom:1.25rem;">
+                <i class="fas fa-home" style="color:#e5792a;margin-right:.5rem;"></i>Konten Hero Beranda
+            </h3>
+            <div class="form-group">
+                <label class="form-label">Badge / Label Kecil</label>
+                <input type="text" name="hero_badge" class="form-input" value="<%= settings.hero_badge %>">
+                <small style="color:#6b7280;">Contoh: "Media Informasi Resmi"</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Judul Baris 1 <span class="required">*</span></label>
+                <input type="text" name="hero_title_line1" class="form-input" value="<%= settings.hero_title_line1 %>" required>
+                <small style="color:#6b7280;">Teks hitam di atas. Contoh: "Generasi Muda"</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Judul Baris 2 (Gradient) <span class="required">*</span></label>
+                <input type="text" name="hero_title_line2" class="form-input" value="<%= settings.hero_title_line2 %>" required>
+                <small style="color:#6b7280;">Teks warna oranye-ungu. Contoh: "Indonesia Emas"</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Deskripsi Hero</label>
+                <textarea name="hero_description" class="form-input form-textarea" rows="3"><%= settings.hero_description %></textarea>
+            </div>
+        </div>
+
+        <!-- Statistik -->
+        <div class="section-card">
+            <h3 class="card-subtitle" style="margin-bottom:1.25rem;">
+                <i class="fas fa-chart-bar" style="color:#e5792a;margin-right:.5rem;"></i>Statistik (3 Angka)
+            </h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+                <div class="form-group">
+                    <label class="form-label">Angka 1</label>
+                    <input type="text" name="stat1_number" class="form-input" value="<%= settings.stat1_number %>">
+                    <input type="text" name="stat1_label" class="form-input" style="margin-top:.5rem;" value="<%= settings.stat1_label %>" placeholder="Label...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Angka 2</label>
+                    <input type="text" name="stat2_number" class="form-input" value="<%= settings.stat2_number %>">
+                    <input type="text" name="stat2_label" class="form-input" style="margin-top:.5rem;" value="<%= settings.stat2_label %>" placeholder="Label...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Angka 3</label>
+                    <input type="text" name="stat3_number" class="form-input" value="<%= settings.stat3_number %>">
+                    <input type="text" name="stat3_label" class="form-input" style="margin-top:.5rem;" value="<%= settings.stat3_label %>" placeholder="Label...">
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="section-card">
+            <h3 class="card-subtitle" style="margin-bottom:1.25rem;">
+                <i class="fas fa-layer-group" style="color:#e5792a;margin-right:.5rem;"></i>Footer
+            </h3>
+            <div class="form-group">
+                <label class="form-label">Deskripsi Footer</label>
+                <textarea name="footer_description" class="form-input form-textarea" rows="3"><%= settings.footer_description %></textarea>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ── Kolom Kanan ────────────────────────────────────────────────────── -->
+    <div class="form-sidebar" style="display:flex;flex-direction:column;gap:1.5rem;">
+
+        <!-- Foto Hero -->
+        <div class="section-card">
+            <h3 class="card-subtitle" style="margin-bottom:1.25rem;">
+                <i class="fas fa-image" style="color:#e5792a;margin-right:.5rem;"></i>Foto Hero Beranda
+            </h3>
+            <div id="heroPreviewBox" style="margin-bottom:1rem;">
+                <img id="heroImgPreview" src="<%= settings.hero_image %>" alt="Hero" style="width:100%;border-radius:12px;object-fit:cover;max-height:200px;">
+            </div>
+            <label class="upload-area" for="heroImgInput">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Klik untuk ganti foto hero</span>
+                <small>JPG, PNG, WebP — Maks. 5MB</small>
+                <input type="file" name="hero_image_file" id="heroImgInput" accept="image/*" style="display:none">
+            </label>
+            <div class="form-group" style="margin-top:1rem;">
+                <label class="form-label">Atau masukkan URL gambar</label>
+                <input type="url" name="hero_image" id="heroUrlInput" class="form-input" value="<%= settings.hero_image %>" placeholder="https://...">
+            </div>
+        </div>
+
+        <!-- Kontak -->
+        <div class="section-card">
+            <h3 class="card-subtitle" style="margin-bottom:1.25rem;">
+                <i class="fas fa-address-card" style="color:#e5792a;margin-right:.5rem;"></i>Informasi Kontak
+            </h3>
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-map-marker-alt" style="color:#e5792a;width:16px;"></i> Alamat</label>
+                <textarea name="kontak_alamat" class="form-input form-textarea" rows="2"><%= settings.kontak_alamat %></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-phone" style="color:#e5792a;width:16px;"></i> No. Telepon</label>
+                <input type="text" name="kontak_phone" class="form-input" value="<%= settings.kontak_phone %>" placeholder="+62 8xx-xxxx-xxxx">
+            </div>
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-envelope" style="color:#e5792a;width:16px;"></i> Email</label>
+                <input type="email" name="kontak_email" class="form-input" value="<%= settings.kontak_email %>">
+            </div>
+            <div class="form-group">
+                <label class="form-label"><i class="fab fa-whatsapp" style="color:#25d366;width:16px;"></i> WhatsApp</label>
+                <input type="text" name="kontak_whatsapp" class="form-input" value="<%= settings.kontak_whatsapp %>" placeholder="+62 8xx-xxxx-xxxx">
+            </div>
+        </div>
+
+        <!-- Sosial Media -->
+        <div class="section-card">
+            <h3 class="card-subtitle" style="margin-bottom:1.25rem;">
+                <i class="fas fa-share-alt" style="color:#e5792a;margin-right:.5rem;"></i>Media Sosial
+            </h3>
+            <div class="form-group">
+                <label class="form-label"><i class="fab fa-instagram" style="color:#e1306c;width:16px;"></i> Instagram</label>
+                <input type="url" name="kontak_instagram" class="form-input" value="<%= settings.kontak_instagram %>" placeholder="https://instagram.com/...">
+            </div>
+            <div class="form-group">
+                <label class="form-label"><i class="fab fa-tiktok" style="color:#000;width:16px;"></i> TikTok</label>
+                <input type="url" name="kontak_tiktok" class="form-input" value="<%= settings.kontak_tiktok %>" placeholder="https://tiktok.com/@...">
+            </div>
+            <div class="form-group">
+                <label class="form-label"><i class="fab fa-facebook" style="color:#1877f2;width:16px;"></i> Facebook</label>
+                <input type="url" name="kontak_facebook" class="form-input" value="<%= settings.kontak_facebook %>" placeholder="https://facebook.com/...">
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-full">
+                <i class="fas fa-save"></i> Simpan Pengaturan
+            </button>
+        </div>
+
+    </div>
+</div>
+</form>
+
+<%- include('partials/footer', { extraScript: `
+<script>
+document.getElementById('heroImgInput').addEventListener('change', function() {
+    var file = this.files[0];
+    if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('heroImgPreview').src = e.target.result;
+            document.getElementById('heroUrlInput').value = '';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+` }) %>

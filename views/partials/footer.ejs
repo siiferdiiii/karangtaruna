@@ -3,17 +3,38 @@
         <div class="grid md:grid-cols-4 gap-8 mb-12">
             <div class="col-span-2">
                 <div class="flex items-center space-x-3 mb-4">
-                    <div class="w-10 h-10 bg-gradient-to-br from-karang-500 to-taruna-600 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-users text-white"></i>
-                    </div>
+                    <img src="/images/logo.jpeg" alt="Logo" class="w-10 h-10 rounded-lg object-cover">
                     <div>
                         <h3 class="text-lg font-bold">KARANG TARUNA</h3>
                         <p class="text-xs text-gray-400">Kel. Tanjung &bull; Kab. Mempawah</p>
                     </div>
                 </div>
                 <p class="text-gray-400 text-sm leading-relaxed max-w-sm">
-                    Wadah pengembangan generasi muda Kelurahan Tanjung yang aktif, kreatif, dan berkontribusi untuk kemajuan masyarakat dan bangsa.
+                    <%= (typeof s !== 'undefined' && s.footer_description) ? s.footer_description : 'Wadah pengembangan generasi muda Kelurahan Tanjung yang aktif, kreatif, dan berkontribusi untuk kemajuan masyarakat dan bangsa.' %>
                 </p>
+                <!-- Social Media -->
+                <div class="flex gap-3 mt-4">
+                    <% if (typeof s !== 'undefined' && s.kontak_instagram) { %>
+                    <a href="<%= s.kontak_instagram %>" target="_blank" rel="noopener" class="w-9 h-9 bg-gray-700 hover:bg-pink-600 rounded-lg flex items-center justify-center transition-colors">
+                        <i class="fab fa-instagram text-sm"></i>
+                    </a>
+                    <% } %>
+                    <% if (typeof s !== 'undefined' && s.kontak_tiktok) { %>
+                    <a href="<%= s.kontak_tiktok %>" target="_blank" rel="noopener" class="w-9 h-9 bg-gray-700 hover:bg-black rounded-lg flex items-center justify-center transition-colors">
+                        <i class="fab fa-tiktok text-sm"></i>
+                    </a>
+                    <% } %>
+                    <% if (typeof s !== 'undefined' && s.kontak_facebook) { %>
+                    <a href="<%= s.kontak_facebook %>" target="_blank" rel="noopener" class="w-9 h-9 bg-gray-700 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-colors">
+                        <i class="fab fa-facebook-f text-sm"></i>
+                    </a>
+                    <% } %>
+                    <% if (typeof s !== 'undefined' && s.kontak_whatsapp) { %>
+                    <a href="https://wa.me/<%= s.kontak_whatsapp.replace(/[^0-9]/g,'') %>" target="_blank" rel="noopener" class="w-9 h-9 bg-gray-700 hover:bg-green-600 rounded-lg flex items-center justify-center transition-colors">
+                        <i class="fab fa-whatsapp text-sm"></i>
+                    </a>
+                    <% } %>
+                </div>
             </div>
             <div>
                 <h4 class="font-bold mb-4">Tautan Cepat</h4>
@@ -26,12 +47,17 @@
                 </ul>
             </div>
             <div>
-                <h4 class="font-bold mb-4">Program</h4>
+                <h4 class="font-bold mb-4">Kontak</h4>
                 <ul class="space-y-2 text-gray-400 text-sm">
-                    <li><a href="/kegiatan?kategori=sosial" class="hover:text-karang-400 transition-colors">Sosial & Kemanusiaan</a></li>
-                    <li><a href="/kegiatan?kategori=edukasi" class="hover:text-karang-400 transition-colors">Pendidikan</a></li>
-                    <li><a href="/kegiatan?kategori=lingkungan" class="hover:text-karang-400 transition-colors">Lingkungan Hidup</a></li>
-                    <li><a href="/kegiatan" class="hover:text-karang-400 transition-colors">Kewirausahaan</a></li>
+                    <% if (typeof s !== 'undefined' && s.kontak_alamat) { %>
+                    <li class="flex gap-2"><i class="fas fa-map-marker-alt mt-1 text-karang-400"></i><span><%= s.kontak_alamat %></span></li>
+                    <% } %>
+                    <% if (typeof s !== 'undefined' && s.kontak_phone) { %>
+                    <li><i class="fas fa-phone mr-2 text-karang-400"></i><%= s.kontak_phone %></li>
+                    <% } %>
+                    <% if (typeof s !== 'undefined' && s.kontak_email) { %>
+                    <li><i class="fas fa-envelope mr-2 text-karang-400"></i><%= s.kontak_email %></li>
+                    <% } %>
                 </ul>
             </div>
         </div>

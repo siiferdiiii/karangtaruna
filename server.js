@@ -7,7 +7,8 @@ const cookieParser = require('cookie-parser');
 const {
     getBerita, getBeritaBySlug, getBeritaById, incrementBeritaViews,
     getKegiatan, getKegiatanById,
-    getRegistrasi, createRegistrasi
+    getRegistrasi, createRegistrasi,
+    getSettings
 } = require('./utils/data-manager');
 
 const app = express();
@@ -36,6 +37,17 @@ app.locals.formatDateShort = (dateStr) => {
 app.locals.activeRoute = (currentRoute, route) => {
     return currentRoute === route ? 'text-karang-600 font-bold' : 'text-gray-700 hover:text-karang-600';
 };
+
+// ─── Load Settings Global (tersedia di semua template sebagai `s`) ───────────
+app.use(async (req, res, next) => {
+    try {
+        if (!app.locals._settingsLoaded || req.path.startsWith('/admin/pengaturan')) {
+            app.locals.s = await getSettings();
+            app.locals._settingsLoaded = true;
+        }
+    } catch (e) { app.locals.s = app.locals.s || {}; }
+    next();
+});
 
 // ─── Admin Routes ─────────────────────────────────────────────────────────────
 const adminRoutes = require('./routes/admin');
