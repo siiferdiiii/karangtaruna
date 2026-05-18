@@ -175,19 +175,17 @@
     </div>
 </section>
 
-<%- include('partials/footer') %>
-<%- include('partials/scripts') %>
-
 <script>
 // Mobile slider
 var hmCur=0, hmSlides=document.querySelectorAll('.hm'), hmDots=document.querySelectorAll('.hmd');
 function hmGoTo(n){if(!hmSlides.length)return;hmSlides[hmCur].style.opacity=0;hmSlides[hmCur].style.zIndex=0;hmDots[hmCur].style.background='rgba(255,255,255,0.4)';hmCur=(n+hmSlides.length)%hmSlides.length;hmSlides[hmCur].style.opacity=1;hmSlides[hmCur].style.zIndex=1;hmDots[hmCur].style.background='white';}
 function hmNext(){hmGoTo(hmCur+1);}function hmPrev(){hmGoTo(hmCur-1);}
 if(hmSlides.length>1)setInterval(hmNext,4000);
-
 // Desktop slider
 var hdCur=0, hdSlides=document.querySelectorAll('.hd'), hdDots=document.querySelectorAll('.hdd');
 function hdGoTo(n){if(!hdSlides.length)return;hdSlides[hdCur].style.opacity=0;hdSlides[hdCur].style.zIndex=0;hdDots[hdCur].style.background='rgba(255,255,255,0.4)';hdCur=(n+hdSlides.length)%hdSlides.length;hdSlides[hdCur].style.opacity=1;hdSlides[hdCur].style.zIndex=1;hdDots[hdCur].style.background='white';}
 function hdNext(){hdGoTo(hdCur+1);}function hdPrev(){hdGoTo(hdCur-1);}
 if(hdSlides.length>1)setInterval(hdNext,5000);
 </script>
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

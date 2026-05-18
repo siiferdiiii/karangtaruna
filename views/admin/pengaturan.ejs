@@ -208,7 +208,6 @@
 </div>
 </form>
 
-<%- include('partials/footer', { extraScript: `
 <script>
 document.getElementById('heroImgInput').addEventListener('change', function() {
     var file = this.files[0];
@@ -221,12 +220,20 @@ document.getElementById('heroImgInput').addEventListener('change', function() {
         reader.readAsDataURL(file);
     }
 });
+
 var pc = document.getElementById('primaryColorPicker');
 var ph = document.getElementById('primaryColorHex');
-if(pc && ph){
-    pc.addEventListener('input', function(){ ph.value = this.value; });
-    ph.addEventListener('input', function(){ if(/^#[0-9a-fA-F]{6}$/.test(this.value)) pc.value = this.value; });
+if (pc && ph) {
+    pc.addEventListener('input', function() { ph.value = this.value; });
+    ph.addEventListener('input', function() {
+        var v = this.value;
+        if (/^#[0-9a-fA-F]{6}$/.test(v)) pc.value = v;
+    });
 }
-function setPrimaryColor(hex){ if(pc)pc.value=hex; if(ph)ph.value=hex; }
+function setPrimaryColor(hex) {
+    if (pc) pc.value = hex;
+    if (ph) ph.value = hex;
+}
 </script>
-` }) %>
+
+<%- include('partials/footer', { extraScript: '' }) %>
