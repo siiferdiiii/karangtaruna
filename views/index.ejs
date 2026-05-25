@@ -2,7 +2,7 @@
 <%- include('partials/navbar') %>
 
 <!-- Hero Section -->
-<section class="relative min-h-screen flex flex-col justify-center pt-20 overflow-hidden bg-white">
+<section class="relative overflow-hidden bg-white pt-28 pb-16 md:min-h-screen md:flex md:flex-col md:justify-center md:pt-20 md:pb-0">
     <div class="absolute inset-0 z-0">
         <div class="absolute top-20 left-10 w-72 h-72 bg-karang-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
         <div class="absolute bottom-20 right-10 w-72 h-72 bg-taruna-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style="animation-delay:2s;"></div>
@@ -10,7 +10,7 @@
 
     <!-- Mobile Slider (top, hidden on desktop) -->
     <% if (berita && berita.length > 0) { %>
-    <div class="block lg:hidden relative z-10 px-4 pt-4 pb-2">
+    <div class="block md:hidden relative z-10 px-4 pt-4 pb-2">
         <div class="relative overflow-hidden rounded-2xl shadow-xl" style="height:220px;" id="mSlider">
             <% berita.forEach((b, i) => { %>
             <div class="hm absolute inset-0 transition-opacity duration-700" style="opacity:<%= i===0?1:0 %>;z-index:<%= i===0?1:0 %>">
@@ -33,14 +33,14 @@
 
     <!-- Grid -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-        <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div class="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
             <!-- Left -->
             <div class="space-y-8">
                 <div class="inline-flex items-center px-4 py-2 bg-karang-100 text-karang-700 rounded-full text-sm font-semibold">
                     <span class="w-2 h-2 bg-karang-500 rounded-full mr-2 animate-pulse"></span>
                     <%= s.hero_badge || 'Media Informasi Resmi' %>
                 </div>
-                <h1 class="text-5xl lg:text-7xl font-bold leading-tight">
+                <h1 class="text-4xl md:text-5xl lg:text-7xl font-bold leading-tight">
                     <%= s.hero_title_line1 || 'Generasi Muda' %> <br>
                     <span class="bg-gradient-to-r from-karang-500 via-karang-600 to-taruna-600 bg-clip-text text-transparent"><%= s.hero_title_line2 || 'Indonesia Emas' %></span>
                 </h1>
@@ -59,7 +59,7 @@
             </div>
 
             <!-- Right: Desktop Slider -->
-            <div class="hidden lg:block relative">
+            <div class="hidden md:block relative">
                 <div class="relative overflow-hidden rounded-3xl shadow-2xl" style="height:600px;" id="dSlider">
                     <% if (berita && berita.length > 0) { %>
                     <% berita.forEach((b, i) => { %>
