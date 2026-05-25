@@ -92,7 +92,13 @@ app.get('/kegiatan', async (req, res) => {
         const kegiatanData = await getKegiatan({ kategori });
         res.render('kegiatan', { title: 'Kegiatan', route: '/kegiatan', kegiatan: kegiatanData, activeFilter: kategori });
     } catch (err) {
-        res.render('kegiatan', { title: 'Kegiatan', route: '/kegiatan', kegiatan: [], activeFilter: 'all' });
+        console.error('[/kegiatan] Error:', err.message || err);
+        try {
+            res.render('kegiatan', { title: 'Kegiatan', route: '/kegiatan', kegiatan: [], activeFilter: 'all' });
+        } catch (renderErr) {
+            console.error('[/kegiatan] Render error:', renderErr.message || renderErr);
+            res.status(500).send('Terjadi kesalahan memuat halaman kegiatan.');
+        }
     }
 });
 
