@@ -82,7 +82,10 @@ async function deleteKegiatan(id) {
 // ── REGISTRASI ────────────────────────────────────────────────────────────────
 
 async function getRegistrasi() {
-    const { data, error } = await supabase.from('registrasi').select('*').order('tanggal_daftar', { ascending: false });
+    const { data, error } = await supabase
+        .from('registrasi')
+        .select('*, kegiatan(judul)')
+        .order('tanggal_daftar', { ascending: false });
     if (error) throw error;
     return data || [];
 }

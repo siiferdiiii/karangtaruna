@@ -41,7 +41,7 @@
                     <th>Jenis</th>
                     <th>Nama Lengkap</th>
                     <th>Email / No HP</th>
-                    <th>Referensi</th>
+                    <th>Referensi / Kegiatan</th>
                     <th>Tanggal Daftar</th>
                     <th style="width:80px">Aksi</th>
                 </tr>
@@ -61,14 +61,33 @@
                         <div><%= r.email || '-' %></div>
                         <div class="table-slug"><%= r.no_hp || '' %></div>
                     </td>
-                    <td><%= r.referensi || '-' %></td>
+                    <td>
+                        <% if (r.jenis === 'kegiatan') { %>
+                            <strong><%= (r.kegiatan && r.kegiatan.judul) ? r.kegiatan.judul : (r.referensi || '-') %></strong>
+                        <% } else { %>
+                            <span class="text-muted"><%= r.referensi || '-' %></span>
+                        <% } %>
+                    </td>
                     <td><%= formatDate(r.tanggal_daftar) %></td>
                     <td>
-                        <button class="btn-icon btn-delete delete-btn" title="Hapus"
-                            data-url="/admin/formulir/hapus/<%= r.id %>"
-                            data-name="<%= r.nama %>">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <div class="table-actions">
+                            <% if (r.no_hp) { %>
+                                <% 
+                                    let cleanPhone = r.no_hp.replace(/[^0-9]/g, '');
+                                    if (cleanPhone.startsWith('0')) {
+                                        cleanPhone = '62' + cleanPhone.slice(1);
+                                    }
+                                %>
+                                <a href="https://wa.me/<%= cleanPhone %>" target="_blank" class="btn-icon btn-wa" title="Hubungi <%= r.nama %> via WhatsApp">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </a>
+                            <% } %>
+                            <button class="btn-icon btn-delete delete-btn" title="Hapus"
+                                data-url="/admin/formulir/hapus/<%= r.id %>"
+                                data-name="<%= r.nama %>">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
                 <% }); %>

@@ -268,6 +268,42 @@ body { font-family: 'Poppins', sans-serif; font-size: 14px; color: var(--text); 
 .btn-delete { background: #fee2e2; color: #b91c1c; }
 .btn-delete:hover { background: #fecaca; }
 
+.btn-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    background-color: #22c55e;
+    color: white !important;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(34, 197, 94, 0.15);
+}
+.btn-whatsapp:hover {
+    background-color: #16a34a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3);
+}
+.btn-whatsapp i {
+    font-size: 12px;
+}
+
+.btn-wa {
+    background: #dcfce7;
+    color: #16a34a !important;
+}
+.btn-wa:hover {
+    background: #22c55e;
+    color: white !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(34, 197, 94, 0.25);
+}
+
 /* ── FORMS ─────────────────────────────────────── */
 .form-page { }
 .form-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
