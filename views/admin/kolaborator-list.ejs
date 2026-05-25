@@ -1,0 +1,104 @@
+<%- include('partials/header', { activePage: 'kolaborator', extraHead: '' }) %>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Kelola Kolaborator</h1>
+        <p class="page-sub">Kelola partner dan mitra kerja Karang Taruna Kelurahan Tanjung</p>
+    </div>
+</div>
+
+<div class="form-grid">
+    <!-- Kolom Kiri: Form Tambah Kolaborator -->
+    <div class="form-main">
+        <div class="section-card">
+            <h3 class="card-subtitle"><i class="fas fa-plus-circle"></i> Tambah Kolaborator Baru</h3>
+            <form action="/admin/kolaborator/tambah" method="POST" enctype="multipart/form-data" id="kolaboratorForm">
+                <div class="form-group">
+                    <label class="form-label" for="namaInput">Nama Instansi / Mitra <span class="required">*</span></label>
+                    <input type="text" name="nama" id="namaInput" class="form-input" placeholder="Masukkan nama mitra (misal: Pemkab Mempawah)" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="linkInput">Link Tautan Website <small>(opsional)</small></label>
+                    <input type="url" name="link" id="linkInput" class="form-input" placeholder="https://contoh-mitra.com">
+                    <small class="help-text">Tautan yang akan dituju saat logo kolaborator diklik di beranda.</small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Logo Kolaborator <span class="required">*</span></label>
+                    <div id="previewBox" class="hidden" style="margin-bottom: 12px; text-align: center; background: #f8fafc; border: 1.5px solid var(--border); border-radius: 8px; padding: 16px;">
+                        <img id="imgPreview" src="" alt="Preview Logo" style="max-height: 80px; max-width: 200px; object-fit: contain;">
+                    </div>
+                    <label class="upload-area" for="logoInput">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Klik atau drag gambar logo ke sini</span>
+                        <small>PNG Transparan (Disarankan) — Rasio 5:2 (Maks. 200x80px)</small>
+                        <input type="file" name="logo" id="logoInput" accept="image/*" style="display:none" required>
+                    </label>
+                </div>
+
+                <div style="margin-top:24px;">
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-upload"></i> Unggah Kolaborator
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Kolom Kanan: Daftar Kolaborator Saat Ini -->
+    <div class="form-sidebar">
+        <div class="section-card" style="min-height: 380px;">
+            <h3 class="card-subtitle"><i class="fas fa-handshake"></i> Daftar Mitra Aktif (<%= kolaborator.length %>)</h3>
+            
+            <% if (kolaborator.length === 0) { %>
+            <div class="empty-state-full" style="padding: 40px 0;">
+                <i class="fas fa-briefcase" style="font-size:36px; margin-bottom:8px;"></i>
+                <p>Belum ada mitra/kolaborator terdaftar.</p>
+            </div>
+            <% } else { %>
+            <div style="display: grid; grid-template-columns: 1fr; gap: 12px; max-height: 480px; overflow-y: auto; padding-right: 4px;">
+                <% kolaborator.forEach(item => { %>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); background: #ffffff; transition: box-shadow 0.2s;" class="hover:shadow-sm">
+                    <div style="display: flex; align-items: center; gap: 14px; min-width: 0;">
+                        <div style="width: 70px; height: 40px; background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 4px;" class="shrink-0">
+                            <img src="<%= item.logo %>" alt="<%= item.nama %>" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                        </div>
+                        <div style="min-width: 0;">
+                            <strong style="display: block; font-size: 13px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><%= item.nama %></strong>
+                            <% if (item.link) { %>
+                            <a href="<%= item.link %>" target="_blank" style="font-size: 11px; color: var(--primary); text-decoration: none;" class="hover:underline truncate block"><%= item.link %></a>
+                            <% } else { %>
+                            <span style="font-size: 11px; color: var(--text-muted);">Tanpa Tautan</span>
+                            <% } %>
+                        </div>
+                    </div>
+                    <button class="btn-icon btn-delete delete-btn" title="Hapus Mitra"
+                        data-url="/admin/kolaborator/hapus/<%= item.id %>"
+                        data-name="<%= item.nama %>"
+                        style="width: 28px; height: 28px; flex-shrink:0;">
+                        <i class="fas fa-trash" style="font-size: 11px;"></i>
+                    </button>
+                </div>
+                <% }) %>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer', { extraScript: '' }) %>
+
+<script>
+    // Live Image Preview
+    document.getElementById('logoInput').addEventListener('change', function() {
+        var file = this.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('imgPreview').src = e.target.result;
+                document.getElementById('previewBox').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>

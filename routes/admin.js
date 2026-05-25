@@ -7,6 +7,7 @@ const {
     getBerita, getBeritaById, createBerita, updateBerita, deleteBerita,
     getKegiatan, getKegiatanById, createKegiatan, updateKegiatan, deleteKegiatan,
     getRegistrasi, deleteRegistrasi,
+    getKolaborator, createKolaborator, deleteKolaborator,
     getGaleri, createGaleri, deleteGaleriItem,
     uploadImage, deleteImage,
     generateSlug, ensureUniqueSlugDB,
@@ -328,6 +329,42 @@ router.post('/galeri/hapus/:id', isAuthenticated, async (req, res) => {
     }
 });
 
+// ─── KOLABORATOR ─────────────────────────────────────────────────────────────
+router.get('/kolaborator', isAuthenticated, async (req, res) => {
+    try {
+        const kolaborator = await getKolaborator();
+        res.render('admin/kolaborator-list', {
+            title: 'Kelola Kolaborator', adminUser: req.adminUser, kolaborator,
+            success: req.query.success ? decodeURIComponent(req.query.success) : null,
+            error: req.query.error ? decodeURIComponent(req.query.error) : null
+        });
+    } catch (err) { res.redirect('/admin/dashboard'); }
+});
+
+router.post('/kolaborator/tambah', isAuthenticated, upload.single('logo'), async (req, res) => {
+    try {
+        const { nama, link } = req.body;
+        if (!req.file) {
+            return res.redirect('/admin/kolaborator?error=' + encodeURIComponent('Logo kolaborator wajib diupload!'));
+        }
+        const logoUrl = await uploadImage(req.file.buffer, req.file.originalname, req.file.mimetype);
+        await createKolaborator({ nama, logo: logoUrl, link: link || null });
+        res.redirect('/admin/kolaborator?success=' + encodeURIComponent(`Kolaborator "${nama}" berhasil ditambahkan!`));
+    } catch (err) {
+        res.redirect('/admin/kolaborator?error=' + encodeURIComponent('Gagal: ' + err.message));
+    }
+});
+
+router.post('/kolaborator/hapus/:id', isAuthenticated, async (req, res) => {
+    try {
+        const { data: item } = await supabase.from('kolaborator').select('*').eq('id', req.params.id).single();
+        if (item?.logo?.includes('supabase')) await deleteImage(item.logo);
+        await deleteKolaborator(req.params.id);
+        res.redirect('/admin/kolaborator?success=' + encodeURIComponent('Kolaborator berhasil dihapus.'));
+    } catch (err) {
+        res.redirect('/admin/kolaborator?error=' + encodeURIComponent('Gagal menghapus.'));
+    }
+});
 
 // ─── PENGATURAN WEBSITE ───────────────────────────────────────────────────────
 router.get('/pengaturan', isAuthenticated, async (req, res) => {

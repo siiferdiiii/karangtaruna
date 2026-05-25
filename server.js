@@ -8,6 +8,7 @@ const {
     getBerita, getBeritaBySlug, getBeritaById, getBeritaPopuler, incrementBeritaViews,
     getKegiatan, getKegiatanById,
     getRegistrasi, createRegistrasi,
+    getKolaborator,
     getSettings
 } = require('./utils/data-manager');
 
@@ -68,10 +69,20 @@ app.use('/admin', adminRoutes);
 // ─── Public Routes ────────────────────────────────────────────────────────────
 app.get('/', async (req, res) => {
     try {
-        const [beritaData, kegiatanData] = await Promise.all([getBerita(), getKegiatan()]);
-        res.render('index', { title: 'Beranda', route: '/', berita: beritaData.slice(0, 3), kegiatan: kegiatanData.slice(0, 4) });
+        const [beritaData, kegiatanData, kolaboratorData] = await Promise.all([
+            getBerita(),
+            getKegiatan(),
+            getKolaborator()
+        ]);
+        res.render('index', { 
+            title: 'Beranda', 
+            route: '/', 
+            berita: beritaData.slice(0, 3), 
+            kegiatan: kegiatanData.slice(0, 4),
+            kolaborator: kolaboratorData 
+        });
     } catch (err) {
-        res.render('index', { title: 'Beranda', route: '/', berita: [], kegiatan: [] });
+        res.render('index', { title: 'Beranda', route: '/', berita: [], kegiatan: [], kolaborator: [] });
     }
 });
 

@@ -110,6 +110,25 @@ async function deleteRegistrasi(id) {
     if (error) throw error;
 }
 
+// ── KOLABORATOR ──────────────────────────────────────────────────────────────
+
+async function getKolaborator() {
+    const { data, error } = await supabase.from('kolaborator').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+}
+
+async function createKolaborator(data) {
+    const { data: result, error } = await supabase.from('kolaborator').insert(data).select().single();
+    if (error) throw error;
+    return result;
+}
+
+async function deleteKolaborator(id) {
+    const { error } = await supabase.from('kolaborator').delete().eq('id', id);
+    if (error) throw error;
+}
+
 // ── GALERI ────────────────────────────────────────────────────────────────────
 
 async function getGaleri({ kategori } = {}) {
@@ -232,6 +251,7 @@ module.exports = {
     createBerita, updateBerita, deleteBerita,
     getKegiatan, getKegiatanById, createKegiatan, updateKegiatan, deleteKegiatan,
     getRegistrasi, createRegistrasi, deleteRegistrasi,
+    getKolaborator, createKolaborator, deleteKolaborator,
     getGaleri, createGaleri, deleteGaleriItem,
     uploadImage, deleteImage,
     generateSlug, ensureUniqueSlugDB,

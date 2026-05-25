@@ -234,3 +234,46 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 }
 .marquee-inner:hover { animation-play-state: paused; }
 
+/* ── Infinite Logo Marquee ── */
+.logo-marquee-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.logo-marquee-track {
+    display: flex;
+    width: max-content;
+}
+
+.animate-logo-marquee {
+    animation: logo-marquee 40s linear infinite;
+}
+
+.logo-marquee-track:hover {
+    animation-play-state: paused;
+}
+
+.logo-marquee-item {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo-marquee-item img {
+    filter: grayscale(100%);
+    opacity: 0.6;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo-marquee-item:hover img {
+    filter: grayscale(0%);
+    opacity: 1;
+}
+
+@keyframes logo-marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
