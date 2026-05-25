@@ -1,0 +1,98 @@
+<%- include('partials/header', { activePage: 'pengurus', extraHead: '' }) %>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Edit Pengurus</h1>
+        <p class="page-sub">Perbarui informasi profil pengurus <%= member.nama %></p>
+    </div>
+</div>
+
+<div class="section-card" style="max-width: 600px; margin: 0 auto;">
+    <h3 class="card-subtitle"><i class="fas fa-edit"></i> Edit Profil Pengurus</h3>
+    
+    <form action="/admin/pengurus/edit/<%= member.id %>" method="POST" enctype="multipart/form-data" id="editPengurusForm">
+        <div class="form-group">
+            <label class="form-label" for="namaInput">Nama Lengkap <span class="required">*</span></label>
+            <input type="text" name="nama" id="namaInput" class="form-input" value="<%= member.nama %>" placeholder="Masukkan nama lengkap pengurus" required>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group">
+                <label class="form-label" for="jabatanInput">Jabatan <span class="required">*</span></label>
+                <input type="text" name="jabatan" id="jabatanInput" class="form-input" value="<%= member.jabatan %>" placeholder="Contoh: Ketua, Sekretaris" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="divisiInput">Divisi / Bidang <span class="required">*</span></label>
+                <select name="divisi" id="divisiInput" class="form-input" required>
+                    <option value="BPH" <%= member.divisi === 'BPH' ? 'selected' : '' %>>Badan Pengurus Harian (BPH)</option>
+                    <option value="Keagamaan" <%= member.divisi === 'Keagamaan' ? 'selected' : '' %>>Bidang Kerohanian & Keagamaan</option>
+                    <option value="Olahraga" <%= member.divisi === 'Olahraga' ? 'selected' : '' %>>Bidang Olahraga & Rekreasi</option>
+                    <option value="Humas" <%= member.divisi === 'Humas' ? 'selected' : '' %>>Bidang Humas & Kemitraan</option>
+                    <option value="Lingkungan" <%= member.divisi === 'Lingkungan' ? 'selected' : '' %>>Bidang Kebersihan & Lingkungan</option>
+                    <option value="Seni" <%= member.divisi === 'Seni' ? 'selected' : '' %>>Bidang Seni & Budaya</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="urutanInput">Urutan Posisi / Hirarki <span class="required">*</span></label>
+            <input type="number" name="urutan" id="urutanInput" class="form-input" value="<%= member.urutan %>" placeholder="Semakin kecil nilainya, posisi semakin di atas" required>
+            <small class="help-text">Ketua = 1, Wakil = 2, Sekretaris = 3, Bendahara = 4, Koordinator = 10.</small>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group">
+                <label class="form-label" for="instagramInput">Instagram <small>(opsional)</small></label>
+                <input type="text" name="sosmed_instagram" id="instagramInput" class="form-input" value="<%= member.sosmed_instagram || '' %>" placeholder="@username_instagram">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="linkedinInput">LinkedIn <small>(opsional)</small></label>
+                <input type="url" name="sosmed_linkedin" id="linkedinInput" class="form-input" value="<%= member.sosmed_linkedin || '' %>" placeholder="https://linkedin.com/in/username">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Foto Profil Sekarang</label>
+            <div style="margin-bottom: 16px; text-align: center;">
+                <img src="<%= member.foto %>" alt="<%= member.nama %>" style="height: 120px; width: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto; border: 2px solid var(--border);">
+            </div>
+            
+            <label class="form-label">Ganti Foto Profil <small>(opsional)</small></label>
+            <div id="previewBox" class="hidden" style="margin-bottom: 12px; text-align: center; background: #f8fafc; border: 1.5px solid var(--border); border-radius: 8px; padding: 16px;">
+                <img id="imgPreview" src="" alt="Preview Foto" style="height: 120px; width: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto; border: 2px solid var(--primary);">
+            </div>
+            <label class="upload-area" for="fotoInput">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Pilih file baru untuk mengganti foto</span>
+                <small>Format Kotak 1:1 Sangat Disarankan (Maks. 500x500px)</small>
+                <input type="file" name="foto" id="fotoInput" accept="image/*" style="display:none">
+            </label>
+        </div>
+
+        <div style="margin-top:24px; display: flex; gap: 12px;">
+            <a href="/admin/pengurus" class="btn btn-secondary" style="flex: 1; text-align: center; text-decoration: none; padding: 12px 0; border-radius: var(--radius); line-height: 24px;">
+                Batal
+            </a>
+            <button type="submit" class="btn btn-primary" style="flex: 2;">
+                <i class="fas fa-save"></i> Simpan Perubahan
+            </button>
+        </div>
+    </form>
+</div>
+
+<%- include('partials/footer', { extraScript: '' }) %>
+
+<script>
+    // Live Image Preview
+    document.getElementById('fotoInput').addEventListener('change', function() {
+        var file = this.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('imgPreview').src = e.target.result;
+                document.getElementById('previewBox').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>

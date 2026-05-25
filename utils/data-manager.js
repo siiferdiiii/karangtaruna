@@ -129,6 +129,45 @@ async function deleteKolaborator(id) {
     if (error) throw error;
 }
 
+// ── PENGURUS ──────────────────────────────────────────────────────────────────
+
+async function getPengurus() {
+    const { data, error } = await supabase
+        .from('pengurus')
+        .select('*')
+        .order('urutan', { ascending: true })
+        .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+}
+
+async function getPengurusById(id) {
+    const { data, error } = await supabase.from('pengurus').select('*').eq('id', id).single();
+    if (error) return null;
+    return data;
+}
+
+async function createPengurus(data) {
+    const { data: result, error } = await supabase.from('pengurus').insert(data).select().single();
+    if (error) throw error;
+    return result;
+}
+
+async function updatePengurus(id, data) {
+    const { data: result, error } = await supabase.from('pengurus').update(data).eq('id', id).select().single();
+    if (error) throw error;
+    return result;
+}
+
+async function deletePengurus(id) {
+    const member = await getPengurusById(id);
+    if (member && member.foto) {
+        await deleteImage(member.foto);
+    }
+    const { error } = await supabase.from('pengurus').delete().eq('id', id);
+    if (error) throw error;
+}
+
 // ── GALERI ────────────────────────────────────────────────────────────────────
 
 async function getGaleri({ kategori } = {}) {
@@ -252,6 +291,7 @@ module.exports = {
     getKegiatan, getKegiatanById, createKegiatan, updateKegiatan, deleteKegiatan,
     getRegistrasi, createRegistrasi, deleteRegistrasi,
     getKolaborator, createKolaborator, deleteKolaborator,
+    getPengurus, getPengurusById, createPengurus, updatePengurus, deletePengurus,
     getGaleri, createGaleri, deleteGaleriItem,
     uploadImage, deleteImage,
     generateSlug, ensureUniqueSlugDB,

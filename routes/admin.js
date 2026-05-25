@@ -8,6 +8,7 @@ const {
     getKegiatan, getKegiatanById, createKegiatan, updateKegiatan, deleteKegiatan,
     getRegistrasi, deleteRegistrasi,
     getKolaborator, createKolaborator, deleteKolaborator,
+    getPengurus, getPengurusById, createPengurus, updatePengurus, deletePengurus,
     getGaleri, createGaleri, deleteGaleriItem,
     uploadImage, deleteImage,
     generateSlug, ensureUniqueSlugDB,
@@ -363,6 +364,105 @@ router.post('/kolaborator/hapus/:id', isAuthenticated, async (req, res) => {
         res.redirect('/admin/kolaborator?success=' + encodeURIComponent('Kolaborator berhasil dihapus.'));
     } catch (err) {
         res.redirect('/admin/kolaborator?error=' + encodeURIComponent('Gagal menghapus.'));
+    }
+});
+
+// ─── PENGURUS ─────────────────────────────────────────────────────────────────
+router.get('/pengurus', isAuthenticated, async (req, res) => {
+    try {
+        const list = await getPengurus();
+        res.render('admin/pengurus-list', {
+            title: 'Kelola Pengurus',
+            adminUser: req.adminUser,
+            pengurus: list,
+            success: req.query.success ? decodeURIComponent(req.query.success) : null,
+            error: req.query.error ? decodeURIComponent(req.query.error) : null
+        });
+    } catch (err) {
+        res.redirect('/admin/dashboard?error=' + encodeURIComponent('Gagal memuat daftar pengurus.'));
+    }
+});
+
+router.post('/pengurus/tambah', isAuthenticated, upload.single('foto'), async (req, res) => {
+    try {
+        const { nama, jabatan, divisi, urutan, sosmed_instagram, sosmed_linkedin } = req.body;
+        if (!req.file) {
+            return res.redirect('/admin/pengurus?error=' + encodeURIComponent('Foto profil wajib diunggah!'));
+        }
+        const fotoUrl = await uploadImage(req.file.buffer, req.file.originalname, req.file.mimetype);
+        await createPengurus({
+            nama,
+            jabatan,
+            divisi,
+            foto: fotoUrl,
+            urutan: parseInt(urutan) || 0,
+            sosmed_instagram: sosmed_instagram || null,
+            sosmed_linkedin: sosmed_linkedin || null
+        });
+        res.redirect('/admin/pengurus?success=' + encodeURIComponent(`Pengurus "${nama}" berhasil ditambahkan!`));
+    } catch (err) {
+        res.redirect('/admin/pengurus?error=' + encodeURIComponent('Gagal: ' + err.message));
+    }
+});
+
+router.get('/pengurus/edit/:id', isAuthenticated, async (req, res) => {
+    try {
+        const member = await getPengurusById(req.params.id);
+        if (!member) {
+            return res.redirect('/admin/pengurus?error=' + encodeURIComponent('Pengurus tidak ditemukan.'));
+        }
+        res.render('admin/pengurus-edit', {
+            title: 'Edit Pengurus',
+            adminUser: req.adminUser,
+            member
+        });
+    } catch (err) {
+        res.redirect('/admin/pengurus?error=' + encodeURIComponent('Gagal memuat halaman edit.'));
+    }
+});
+
+router.post('/pengurus/edit/:id', isAuthenticated, upload.single('foto'), async (req, res) => {
+    try {
+        const { nama, jabatan, divisi, urutan, sosmed_instagram, sosmed_linkedin } = req.body;
+        const member = await getPengurusById(req.params.id);
+        if (!member) {
+            return res.redirect('/admin/pengurus?error=' + encodeURIComponent('Pengurus tidak ditemukan.'));
+        }
+
+        let fotoUrl = member.foto;
+        if (req.file) {
+            if (member.foto) {
+                await deleteImage(member.foto);
+            }
+            fotoUrl = await uploadImage(req.file.buffer, req.file.originalname, req.file.mimetype);
+        }
+
+        await updatePengurus(req.params.id, {
+            nama,
+            jabatan,
+            divisi,
+            foto: fotoUrl,
+            urutan: parseInt(urutan) || 0,
+            sosmed_instagram: sosmed_instagram || null,
+            sosmed_linkedin: sosmed_linkedin || null
+        });
+
+        res.redirect('/admin/pengurus?success=' + encodeURIComponent(`Pengurus "${nama}" berhasil diperbarui!`));
+    } catch (err) {
+        res.redirect('/admin/pengurus?error=' + encodeURIComponent('Gagal: ' + err.message));
+    }
+});
+
+router.post('/pengurus/hapus/:id', isAuthenticated, async (req, res) => {
+    try {
+        const member = await getPengurusById(req.params.id);
+        if (!member) {
+            return res.redirect('/admin/pengurus?error=' + encodeURIComponent('Pengurus tidak ditemukan.'));
+        }
+        await deletePengurus(req.params.id);
+        res.redirect('/admin/pengurus?success=' + encodeURIComponent('Pengurus berhasil dihapus.'));
+    } catch (err) {
+        res.redirect('/admin/pengurus?error=' + encodeURIComponent('Gagal menghapus pengurus.'));
     }
 });
 

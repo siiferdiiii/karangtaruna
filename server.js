@@ -8,7 +8,7 @@ const {
     getBerita, getBeritaBySlug, getBeritaById, getBeritaPopuler, incrementBeritaViews,
     getKegiatan, getKegiatanById,
     getRegistrasi, createRegistrasi,
-    getKolaborator,
+    getKolaborator, getPengurus,
     getSettings
 } = require('./utils/data-manager');
 
@@ -163,6 +163,16 @@ app.get('/galeri', async (req, res) => {
         res.render('galeri', { title: 'Galeri', route: '/galeri', images });
     } catch (err) {
         res.render('galeri', { title: 'Galeri', route: '/galeri', images: [] });
+    }
+});
+
+app.get('/struktur', async (req, res) => {
+    try {
+        const list = await getPengurus();
+        res.render('struktur', { title: 'Struktur Kepengurusan', route: '/struktur', pengurus: list });
+    } catch (err) {
+        console.error('[/struktur] Error:', err);
+        res.render('struktur', { title: 'Struktur Kepengurusan', route: '/struktur', pengurus: [] });
     }
 });
 
