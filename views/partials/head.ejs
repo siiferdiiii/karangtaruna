@@ -8,7 +8,23 @@
     <meta name="keywords" content="<%= typeof metaKeywords !== 'undefined' && metaKeywords ? metaKeywords : 'karang taruna, kelurahan tanjung, mempawah, pemuda, kegiatan, berita' %>">
     
     <% if (typeof s !== 'undefined' && s && s.google_verification) { %>
-    <meta name="google-site-verification" content="<%= s.google_verification %>" />
+    <% 
+        let cleanToken = s.google_verification.trim();
+        // Extract content if a full tag is pasted
+        if (cleanToken.includes('content=')) {
+            const match = cleanToken.match(/content="([^"]+)"/);
+            if (match) cleanToken = match[1];
+        }
+        // Remove google-site-verification prefix if present
+        if (cleanToken.startsWith('google-site-verification:')) {
+            cleanToken = cleanToken.replace('google-site-verification:', '').trim();
+        }
+        // Strip .html suffix if present
+        if (cleanToken.endsWith('.html')) {
+            cleanToken = cleanToken.replace('.html', '');
+        }
+    %>
+    <meta name="google-site-verification" content="<%= cleanToken %>" />
     <% } %>
 
     <meta property="og:type" content="website">
