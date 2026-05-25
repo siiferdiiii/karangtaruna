@@ -282,7 +282,8 @@ const DEFAULT_SETTINGS = {
     about_program3_title: 'Lingkungan Hidup',
     about_program3_desc: 'Gerakan peduli dan menjaga lingkungan.',
     about_program4_title: 'Pendidikan',
-    about_program4_desc: 'Beasiswa dan pelatihan skill pemuda.'
+    about_program4_desc: 'Beasiswa dan pelatihan skill pemuda.',
+    google_verification: ''
 };
 
 async function getSettings() {

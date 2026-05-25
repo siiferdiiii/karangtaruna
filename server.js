@@ -109,7 +109,17 @@ app.get('/berita/:slug', async (req, res) => {
         ]);
         
         const related = allBerita.filter(b => b.id !== item.id).slice(0, 3);
-        res.render('detail-berita', { title: item.judul, route: '/berita', item, related, populer });
+        
+        res.render('detail-berita', { 
+            title: item.judul, 
+            route: '/berita', 
+            item, 
+            related, 
+            populer,
+            metaDescription: item.ringkasan,
+            metaKeywords: item.tag && item.tag.length ? item.tag.join(', ') : 'berita, mempawah, karang taruna',
+            metaImage: item.gambar
+        });
     } catch (err) {
         res.status(404).render('404', { title: 'Tidak Ditemukan', route: '' });
     }
@@ -145,9 +155,17 @@ app.get('/kegiatan/:id', async (req, res) => {
         
         // Ambil kegiatan terkait dari kategori yang sama
         const allKegiatan = await getKegiatan({ kategori: item.kategori });
-        const related = allKegiatan.filter(k => k.id !== item.id).slice(0, 3);
+        const cleanDesc = item.deskripsi ? item.deskripsi.replace(/<[^>]*>/g, '').substring(0, 160).trim() + '...' : item.judul;
         
-        res.render('detail-kegiatan', { title: item.judul, route: '/kegiatan', item, related });
+        res.render('detail-kegiatan', { 
+            title: item.judul, 
+            route: '/kegiatan', 
+            item, 
+            related,
+            metaDescription: cleanDesc,
+            metaKeywords: `${item.kategori || 'sosial'}, kegiatan, mempawah, karang taruna`,
+            metaImage: item.gambar
+        });
     } catch (err) {
         res.status(404).render('404', { title: 'Tidak Ditemukan', route: '' });
     }
@@ -206,6 +224,60 @@ app.post('/daftar-anggota', async (req, res) => {
         await createRegistrasi({ jenis: 'anggota', referensi: 'Pendaftaran Anggota Baru', nama, nik, ttl, jenis_kelamin, alamat, no_hp, email, pendidikan, pekerjaan });
         res.render('daftar-anggota', { title: 'Daftar Anggota Baru', route: '/', success: true });
     } catch (err) { res.render('daftar-anggota', { title: 'Daftar Anggota Baru', route: '/', success: false }); }
+});
+
+app.get('/sitemap.xml', async (req, res) => {
+    try {
+        const [beritaData, kegiatanData] = await Promise.all([getBerita(), getKegiatan()]);
+        const host = req.headers['x-forwarded-host'] || req.headers.host || 'karangtaruna-xi.vercel.app';
+        const protocol = req.headers['x-forwarded-proto'] || 'https';
+        const baseUrl = `${protocol}://${host}`;
+        
+        let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+        xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+        
+        const staticPages = [
+            { path: '', changefreq: 'daily', priority: '1.0' },
+            { path: '/tentang', changefreq: 'weekly', priority: '0.8' },
+            { path: '/struktur', changefreq: 'weekly', priority: '0.8' },
+            { path: '/berita', changefreq: 'daily', priority: '0.9' },
+            { path: '/kegiatan', changefreq: 'daily', priority: '0.9' },
+            { path: '/galeri', changefreq: 'weekly', priority: '0.7' },
+            { path: '/kontak', changefreq: 'monthly', priority: '0.6' }
+        ];
+        
+        staticPages.forEach(p => {
+            xml += `  <url>\n`;
+            xml += `    <loc>${baseUrl}${p.path}</loc>\n`;
+            xml += `    <changefreq>${p.changefreq}</changefreq>\n`;
+            xml += `    <priority>${p.priority}</priority>\n`;
+            xml += `  </url>\n`;
+        });
+        
+        beritaData.forEach(item => {
+            xml += `  <url>\n`;
+            xml += `    <loc>${baseUrl}/berita/${item.slug}</loc>\n`;
+            xml += `    <changefreq>monthly</changefreq>\n`;
+            xml += `    <priority>0.8</priority>\n`;
+            xml += `  </url>\n`;
+        });
+        
+        kegiatanData.forEach(item => {
+            xml += `  <url>\n`;
+            xml += `    <loc>${baseUrl}/kegiatan/${item.id}</loc>\n`;
+            xml += `    <changefreq>monthly</changefreq>\n`;
+            xml += `    <priority>0.7</priority>\n`;
+            xml += `  </url>\n`;
+        });
+        
+        xml += `</urlset>`;
+        
+        res.header('Content-Type', 'application/xml');
+        res.send(xml);
+    } catch (err) {
+        console.error('Sitemap error:', err);
+        res.status(500).send('Error generating sitemap');
+    }
 });
 
 // ─── Global Error Handler ─────────────────────────────────────────────────────

@@ -4,10 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %> | Karang Taruna Kel. Tanjung</title>
-    <meta name="description" content="Media Informasi Resmi Karang Taruna Kelurahan Tanjung, Kabupaten Mempawah - Wadah pengembangan generasi muda Kelurahan Tanjung">
-    <meta name="keywords" content="karang taruna, kelurahan tanjung, mempawah, pemuda, kegiatan, berita">
+    <meta name="description" content="<%= typeof metaDescription !== 'undefined' && metaDescription ? metaDescription : 'Media Informasi Resmi Karang Taruna Kelurahan Tanjung, Kabupaten Mempawah' %>">
+    <meta name="keywords" content="<%= typeof metaKeywords !== 'undefined' && metaKeywords ? metaKeywords : 'karang taruna, kelurahan tanjung, mempawah, pemuda, kegiatan, berita' %>">
+    
+    <% if (typeof s !== 'undefined' && s && s.google_verification) { %>
+    <meta name="google-site-verification" content="<%= s.google_verification %>" />
+    <% } %>
+
+    <meta property="og:type" content="website">
     <meta property="og:title" content="<%= title %> | Karang Taruna Kel. Tanjung">
-    <meta property="og:description" content="Media Informasi Resmi Karang Taruna Kelurahan Tanjung, Kabupaten Mempawah">
+    <meta property="og:description" content="<%= typeof metaDescription !== 'undefined' && metaDescription ? metaDescription : 'Media Informasi Resmi Karang Taruna Kelurahan Tanjung, Kabupaten Mempawah' %>">
+    <meta property="og:image" content="<%= typeof metaImage !== 'undefined' && metaImage ? metaImage : 'https://karangtaruna-xi.vercel.app/images/logo.jpeg' %>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">

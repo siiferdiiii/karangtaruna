@@ -155,6 +155,17 @@
                         <textarea name="footer_description" class="form-input form-textarea" rows="3"><%= settings.footer_description %></textarea>
                     </div>
                 </div>
+                <!-- Google Search Console & SEO -->
+                <div class="section-card">
+                    <h3 class="card-subtitle" style="margin-bottom:1.25rem;">
+                        <i class="fab fa-google" style="color:#e5792a;margin-right:.5rem;"></i>SEO & Google Search Console
+                    </h3>
+                    <div class="form-group">
+                        <label class="form-label">Google Site Verification Code</label>
+                        <input type="text" name="google_verification" class="form-input" value="<%= settings.google_verification || '' %>" placeholder="contoh: google1234567890abcdef">
+                        <small style="color:#6b7280;">Masukkan kode verifikasi HTML tag Google Search Console Anda agar Google dapat mengindeks website ini.</small>
+                    </div>
+                </div>
             </div>
         </div>
 
