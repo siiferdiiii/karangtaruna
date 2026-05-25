@@ -40,7 +40,7 @@
                         text-white text-xs font-bold rounded-full mb-2 uppercase"><%= item.kategori %></span>
                     <h3 class="text-white font-bold text-lg"><%= item.judul %></h3>
                     <p class="text-gray-300 text-sm mt-1"><i class="fas fa-map-marker-alt mr-1"></i> <%= item.lokasi %>, <%= formatDateShort(item.tanggal) %></p>
-                    <p class="text-gray-400 text-xs mt-2 line-clamp-2"><%= (item.deskripsi || '').replace(/<[^>]*>/g, '') %></p>
+                    <p class="text-gray-400 text-xs mt-2 line-clamp-2"><%= stripHtml(item.deskripsi) %></p>
                 </div>
             </div>
             <% }) %>

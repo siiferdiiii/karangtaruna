@@ -37,6 +37,7 @@ app.locals.formatDateShort = (dateStr) => {
 app.locals.activeRoute = (currentRoute, route) => {
     return currentRoute === route ? 'text-karang-600 font-bold' : 'text-gray-700 hover:text-karang-600';
 };
+app.locals.stripHtml = (str) => (str || '').replace(/<[^>]*>/g, '').trim();
 
 // ─── Load Settings Global (tersedia di semua template sebagai `s`) ───────────
 app.use(async (req, res, next) => {
@@ -86,19 +87,26 @@ app.get('/berita/:slug', async (req, res) => {
     }
 });
 
-app.get('/kegiatan', async (req, res) => {
+app.get('/kegiatan', async (req, res, next) => {
     try {
         const kategori = req.query.kategori || 'all';
         const kegiatanData = await getKegiatan({ kategori });
-        res.render('kegiatan', { title: 'Kegiatan', route: '/kegiatan', kegiatan: kegiatanData, activeFilter: kategori });
+        res.render('kegiatan', { title: 'Kegiatan', route: '/kegiatan', kegiatan: kegiatanData, activeFilter: kategori }, (err, html) => {
+            if (err) {
+                console.error('[/kegiatan] Render error:', err.message || err);
+                return res.status(500).send('<h1>Gagal memuat halaman kegiatan</h1><pre>' + err.message + '</pre>');
+            }
+            res.send(html);
+        });
     } catch (err) {
-        console.error('[/kegiatan] Error:', err.message || err);
-        try {
-            res.render('kegiatan', { title: 'Kegiatan', route: '/kegiatan', kegiatan: [], activeFilter: 'all' });
-        } catch (renderErr) {
-            console.error('[/kegiatan] Render error:', renderErr.message || renderErr);
-            res.status(500).send('Terjadi kesalahan memuat halaman kegiatan.');
-        }
+        console.error('[/kegiatan] DB error:', err.message || err);
+        res.render('kegiatan', { title: 'Kegiatan', route: '/kegiatan', kegiatan: [], activeFilter: 'all' }, (renderErr, html) => {
+            if (renderErr) {
+                console.error('[/kegiatan] Fallback render error:', renderErr.message || renderErr);
+                return res.status(500).send('<h1>Gagal memuat halaman kegiatan</h1><pre>' + renderErr.message + '</pre>');
+            }
+            res.send(html);
+        });
     }
 });
 
@@ -145,6 +153,13 @@ app.post('/daftar-anggota', async (req, res) => {
         await createRegistrasi({ jenis: 'anggota', referensi: 'Pendaftaran Anggota Baru', nama, nik, ttl, jenis_kelamin, alamat, no_hp, email, pendidikan, pekerjaan });
         res.render('daftar-anggota', { title: 'Daftar Anggota Baru', route: '/', success: true });
     } catch (err) { res.render('daftar-anggota', { title: 'Daftar Anggota Baru', route: '/', success: false }); }
+});
+
+// ─── Global Error Handler ─────────────────────────────────────────────────────
+app.use((err, req, res, next) => {
+    console.error('[Global Error]', req.method, req.path, err.message || err);
+    if (res.headersSent) return next(err);
+    res.status(err.status || 500).send('<h1>Server Error</h1><p>' + (err.message || 'Unknown error') + '</p>');
 });
 
 app.use((req, res) => res.status(404).render('404', { title: 'Halaman Tidak Ditemukan', route: '' }));
