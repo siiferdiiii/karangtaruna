@@ -132,11 +132,11 @@ router.get('/berita/tambah', isAuthenticated, (req, res) => {
 
 router.post('/berita/tambah', isAuthenticated, upload.single('gambar'), async (req, res) => {
     try {
-        const { judul, ringkasan, konten, kategori, penulis, tag } = req.body;
+        const { judul, ringkasan, konten, kategori, penulis, tag, tanggal } = req.body;
         let gambar = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=500&fit=crop';
         if (req.file) gambar = await uploadImage(req.file.buffer, req.file.originalname, req.file.mimetype);
         const slug = await ensureUniqueSlugDB(generateSlug(judul));
-        await createBerita({ slug, judul, ringkasan, konten, kategori, tanggal: new Date().toISOString().split('T')[0], penulis: penulis || 'Admin', gambar, views: 0, tag: tag ? tag.split(',').map(t => t.trim()).filter(Boolean) : [] });
+        await createBerita({ slug, judul, ringkasan, konten, kategori, tanggal: tanggal || new Date().toISOString().split('T')[0], penulis: penulis || 'Admin', gambar, views: 0, tag: tag ? tag.split(',').map(t => t.trim()).filter(Boolean) : [] });
         res.redirect('/admin/berita?success=' + encodeURIComponent(`Berita "${judul}" berhasil ditambahkan!`));
     } catch (err) {
         res.redirect('/admin/berita/tambah?error=' + encodeURIComponent('Gagal: ' + err.message));
@@ -155,14 +155,14 @@ router.post('/berita/edit/:id', isAuthenticated, upload.single('gambar'), async 
     try {
         const item = await getBeritaById(req.params.id);
         if (!item) return res.redirect('/admin/berita');
-        const { judul, ringkasan, konten, kategori, penulis, tag, slug: slugInput } = req.body;
+        const { judul, ringkasan, konten, kategori, penulis, tag, slug: slugInput, tanggal } = req.body;
         let gambar = item.gambar;
         if (req.file) {
             if (item.gambar && item.gambar.includes('supabase')) await deleteImage(item.gambar);
             gambar = await uploadImage(req.file.buffer, req.file.originalname, req.file.mimetype);
         }
         const slug = await ensureUniqueSlugDB(slugInput || generateSlug(judul), req.params.id);
-        await updateBerita(req.params.id, { slug, judul, ringkasan, konten, kategori, penulis: penulis || item.penulis, gambar, tag: tag ? tag.split(',').map(t => t.trim()).filter(Boolean) : item.tag });
+        await updateBerita(req.params.id, { slug, judul, ringkasan, konten, kategori, tanggal: tanggal || item.tanggal, penulis: penulis || item.penulis, gambar, tag: tag ? tag.split(',').map(t => t.trim()).filter(Boolean) : item.tag });
         res.redirect('/admin/berita?success=' + encodeURIComponent(`Berita "${judul}" berhasil diperbarui!`));
     } catch (err) {
         res.redirect(`/admin/berita/edit/${req.params.id}?error=` + encodeURIComponent('Gagal: ' + err.message));
@@ -198,10 +198,20 @@ router.get('/kegiatan/tambah', isAuthenticated, (req, res) => {
 
 router.post('/kegiatan/tambah', isAuthenticated, upload.single('gambar'), async (req, res) => {
     try {
-        const { judul, kategori, lokasi, tanggal, deskripsi, buka_pendaftaran } = req.body;
+        const { judul, kategori, lokasi, tanggal, deskripsi, buka_pendaftaran, pendaftaran_dibuka, pendaftaran_ditutup } = req.body;
         let gambar = 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&h=400&fit=crop';
         if (req.file) gambar = await uploadImage(req.file.buffer, req.file.originalname, req.file.mimetype);
-        await createKegiatan({ judul, kategori, lokasi, tanggal, deskripsi, gambar, buka_pendaftaran: buka_pendaftaran === 'on' });
+        await createKegiatan({ 
+            judul, 
+            kategori, 
+            lokasi, 
+            tanggal, 
+            deskripsi, 
+            gambar, 
+            buka_pendaftaran: buka_pendaftaran === 'on',
+            pendaftaran_dibuka: pendaftaran_dibuka || null,
+            pendaftaran_ditutup: pendaftaran_ditutup || null
+        });
         res.redirect('/admin/kegiatan?success=' + encodeURIComponent(`Kegiatan "${judul}" berhasil ditambahkan!`));
     } catch (err) {
         res.redirect('/admin/kegiatan/tambah?error=' + encodeURIComponent('Gagal: ' + err.message));
@@ -220,13 +230,23 @@ router.post('/kegiatan/edit/:id', isAuthenticated, upload.single('gambar'), asyn
     try {
         const item = await getKegiatanById(req.params.id);
         if (!item) return res.redirect('/admin/kegiatan');
-        const { judul, kategori, lokasi, tanggal, deskripsi, buka_pendaftaran } = req.body;
+        const { judul, kategori, lokasi, tanggal, deskripsi, buka_pendaftaran, pendaftaran_dibuka, pendaftaran_ditutup } = req.body;
         let gambar = item.gambar;
         if (req.file) {
             if (item.gambar?.includes('supabase')) await deleteImage(item.gambar);
             gambar = await uploadImage(req.file.buffer, req.file.originalname, req.file.mimetype);
         }
-        await updateKegiatan(req.params.id, { judul, kategori, lokasi, tanggal, deskripsi, gambar, buka_pendaftaran: buka_pendaftaran === 'on' });
+        await updateKegiatan(req.params.id, { 
+            judul, 
+            kategori, 
+            lokasi, 
+            tanggal, 
+            deskripsi, 
+            gambar, 
+            buka_pendaftaran: buka_pendaftaran === 'on',
+            pendaftaran_dibuka: pendaftaran_dibuka || null,
+            pendaftaran_ditutup: pendaftaran_ditutup || null
+        });
         res.redirect('/admin/kegiatan?success=' + encodeURIComponent(`Kegiatan "${judul}" berhasil diperbarui!`));
     } catch (err) {
         res.redirect(`/admin/kegiatan/edit/${req.params.id}?error=` + encodeURIComponent('Gagal: ' + err.message));

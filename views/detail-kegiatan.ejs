@@ -85,34 +85,77 @@
                                     <i class="far fa-calendar-alt text-base"></i>
                                 </div>
                                 <div>
-                                    <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Tanggal Pelaksanaan</p>
+                                    <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Tanggal Kegiatan Dimulai</p>
                                     <p class="font-bold text-gray-800 text-sm sm:text-base"><%= formatDate(item.tanggal) %></p>
                                 </div>
                             </div>
 
-                            <!-- Status Pendaftaran -->
+                            <!-- Periode Pendaftaran -->
+                            <% if (item.buka_pendaftaran && (item.pendaftaran_dibuka || item.pendaftaran_ditutup)) { %>
                             <div class="flex items-start gap-4">
-                                <div class="w-10 h-10 rounded-xl <%= item.buka_pendaftaran ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-500' %> flex items-center justify-center shrink-0">
-                                    <i class="fas <%= item.buka_pendaftaran ? 'fa-door-open' : 'fa-door-closed' %> text-base"></i>
+                                <div class="w-10 h-10 rounded-xl bg-green-100 text-green-600 flex items-center justify-center shrink-0">
+                                    <i class="fas fa-user-clock text-base"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Periode Pendaftaran</p>
+                                    <p class="font-bold text-gray-800 text-xs sm:text-sm leading-relaxed">
+                                        <%= item.pendaftaran_dibuka ? formatDate(item.pendaftaran_dibuka) : 'Mulai Sekarang' %> 
+                                        <br><span class="text-gray-400 font-normal">s.d.</span> <br>
+                                        <%= item.pendaftaran_ditutup ? formatDate(item.pendaftaran_ditutup) : 'Selesai' %>
+                                    </p>
+                                </div>
+                            </div>
+                            <% } %>
+
+                            <!-- Status Pendaftaran -->
+                            <% 
+                                var todayStr = new Date().toISOString().split('T')[0];
+                                var isOpen = item.buka_pendaftaran;
+                                var statusMsg = 'Ditutup';
+                                var statusClass = 'bg-gray-300 text-gray-600';
+                                
+                                if (isOpen) {
+                                    if (item.pendaftaran_dibuka && todayStr < new Date(item.pendaftaran_dibuka).toISOString().split('T')[0]) {
+                                        isOpen = false;
+                                        statusMsg = 'Belum Dibuka';
+                                        statusClass = 'bg-yellow-200 text-yellow-800';
+                                    } else if (item.pendaftaran_ditutup && todayStr > new Date(item.pendaftaran_ditutup).toISOString().split('T')[0]) {
+                                        isOpen = false;
+                                        statusMsg = 'Selesai / Ditutup';
+                                        statusClass = 'bg-red-200 text-red-800';
+                                    } else {
+                                        statusMsg = 'Dibuka';
+                                        statusClass = 'bg-green-200 text-green-800';
+                                    }
+                                }
+                            %>
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl <%= isOpen ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-500' %> flex items-center justify-center shrink-0">
+                                    <i class="fas <%= isOpen ? 'fa-door-open' : 'fa-door-closed' %> text-base"></i>
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Status Registrasi</p>
-                                    <span class="inline-block px-2.5 py-0.5 mt-0.5 rounded-full text-xs font-bold uppercase tracking-wider
-                                        <%= item.buka_pendaftaran ? 'bg-green-200 text-green-800' : 'bg-gray-300 text-gray-600' %>">
-                                        <%= item.buka_pendaftaran ? 'Dibuka' : 'Ditutup' %>
+                                    <span class="inline-block px-2.5 py-0.5 mt-0.5 rounded-full text-xs font-bold uppercase tracking-wider <%= statusClass %>">
+                                        <%= statusMsg %>
                                     </span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- CTA Button -->
-                        <% if (item.buka_pendaftaran) { %>
-                            <a href="/daftar-kegiatan/<%= item.id %>" class="w-full py-4 bg-gradient-to-r from-karang-500 to-karang-600 text-white rounded-2xl font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 text-center">
+                        <% if (isOpen) { %>
+                            <a href="/daftar-kegiatan/<%= item.id %>" class="w-full py-4 bg-gradient-to-r from-karang-500 to-karang-600 text-white rounded-2xl font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 text-center animate-pulse">
                                 <i class="fas fa-user-plus"></i> Daftar Sekarang
                             </a>
                         <% } else { %>
+                            <% 
+                                var btnMsg = 'Pendaftaran Ditutup';
+                                if (item.buka_pendaftaran && item.pendaftaran_dibuka && todayStr < new Date(item.pendaftaran_dibuka).toISOString().split('T')[0]) {
+                                    btnMsg = 'Belum Dibuka';
+                                }
+                            %>
                             <button disabled class="w-full py-4 bg-gray-200 text-gray-400 rounded-2xl font-bold cursor-not-allowed flex items-center justify-center gap-2 text-center">
-                                <i class="fas fa-lock"></i> Pendaftaran Ditutup
+                                <i class="fas fa-lock"></i> <%= btnMsg %>
                             </button>
                         <% } %>
                     </div>

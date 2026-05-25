@@ -72,6 +72,18 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label class="form-label">Tanggal Rilis <span class="required">*</span></label>
+                    <% 
+                        var dateVal = '';
+                        if (isEdit && item.tanggal) {
+                            dateVal = new Date(item.tanggal).toISOString().split('T')[0];
+                        } else {
+                            dateVal = new Date().toISOString().split('T')[0];
+                        }
+                    %>
+                    <input type="date" name="tanggal" class="form-input" value="<%= dateVal %>" required>
+                </div>
+                <div class="form-group">
                     <label class="form-label">Penulis</label>
                     <input type="text" name="penulis" class="form-input" value="<%= isEdit ? item.penulis : 'Admin' %>" placeholder="Nama penulis">
                 </div>

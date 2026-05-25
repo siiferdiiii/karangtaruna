@@ -30,6 +30,8 @@ CREATE TABLE IF NOT EXISTS kegiatan (
   deskripsi TEXT,
   gambar TEXT,
   buka_pendaftaran BOOLEAN DEFAULT FALSE,
+  pendaftaran_dibuka DATE,
+  pendaftaran_ditutup DATE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
