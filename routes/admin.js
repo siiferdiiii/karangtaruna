@@ -480,19 +480,34 @@ router.get('/pengaturan', isAuthenticated, async (req, res) => {
     }
 });
 
-router.post('/pengaturan', isAuthenticated, upload.single('hero_image_file'), async (req, res) => {
+router.post('/pengaturan', isAuthenticated, upload.fields([
+    { name: 'hero_image_file', maxCount: 1 },
+    { name: 'about_image_file', maxCount: 1 }
+]), async (req, res) => {
     try {
         const body = req.body;
-        // Jika ada upload foto hero baru
-        if (req.file) {
-            body.hero_image = await uploadImage(req.file.buffer, req.file.originalname, req.file.mimetype);
+        
+        // Handle hero image upload
+        if (req.files && req.files.hero_image_file && req.files.hero_image_file[0]) {
+            const file = req.files.hero_image_file[0];
+            body.hero_image = await uploadImage(file.buffer, file.originalname, file.mimetype);
         }
-        // Hapus field upload dari body (bukan setting)
+        
+        // Handle about image upload
+        if (req.files && req.files.about_image_file && req.files.about_image_file[0]) {
+            const file = req.files.about_image_file[0];
+            body.about_image = await uploadImage(file.buffer, file.originalname, file.mimetype);
+        }
+        
+        // Clean up temporary fields before saving settings
         delete body.hero_image_file;
+        delete body.about_image_file;
+        
         await updateSettings(body);
-        // Reload settings ke app.locals
-        const { getSettings: gs } = require('../utils/data-manager');
-        require('../server') // noop, just for clarity
+        
+        // Reset app settings cache so it reloads on next request
+        req.app.locals._settingsLoaded = false;
+        
         res.redirect('/admin/pengaturan?success=' + encodeURIComponent('Pengaturan berhasil disimpan!'));
     } catch (err) {
         console.error('Pengaturan error:', err);

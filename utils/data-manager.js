@@ -262,7 +262,27 @@ const DEFAULT_SETTINGS = {
     marquee_link: '',
     marquee_bg: '#e5792a',
     marquee_text_color: '#ffffff',
-    marquee_speed: '25'
+    marquee_speed: '25',
+    // Tentang Kami (About Us)
+    about_image: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600&h=500&fit=crop',
+    about_years: '35',
+    about_badge: 'Tentang Kami',
+    about_title: 'Membangun Negeri Bersama Pemuda Indonesia',
+    about_description1: 'Karang Taruna didirikan sebagai wadah pengembangan kreativitas, inovasi, dan kontribusi sosial bagi generasi muda Indonesia. Kami percaya bahwa pemuda adalah agen perubahan yang mampu membawa Indonesia menuju masa depan yang lebih baik.',
+    about_description2: 'Dengan semangat kebersamaan dan gotong royong, Karang Taruna terus berkontribusi dalam berbagai bidang mulai dari sosial, pendidikan, lingkungan, hingga kewirausahaan.',
+    about_visi: 'Menjadikan Karang Taruna sebagai organisasi kepemudaan yang unggul, mandiri, dan berkontribusi aktif dalam pembangunan masyarakat, bangsa, dan negara.',
+    about_misi1: 'Mengembangkan potensi dan kreativitas pemuda',
+    about_misi2: 'Membangun jaringan kerja sama antar pemuda',
+    about_misi3: 'Meningkatkan kontribusi sosial dan lingkungan',
+    about_misi4: 'Mendorong kewirausahaan dan inovasi pemuda',
+    about_program1_title: 'Sosial & Kemanusiaan',
+    about_program1_desc: 'Program bantuan dan peduli sesama masyarakat.',
+    about_program2_title: 'Inovasi & Kreativitas',
+    about_program2_desc: 'Pengembangan ide dan karya pemuda Indonesia.',
+    about_program3_title: 'Lingkungan Hidup',
+    about_program3_desc: 'Gerakan peduli dan menjaga lingkungan.',
+    about_program4_title: 'Pendidikan',
+    about_program4_desc: 'Beasiswa dan pelatihan skill pemuda.'
 };
 
 async function getSettings() {

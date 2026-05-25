@@ -5,26 +5,28 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid lg:grid-cols-2 gap-16 items-center mb-24">
             <div class="relative">
-                <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600&h=500&fit=crop" alt="Community" class="rounded-3xl shadow-2xl w-full">
+                <img src="<%= s.about_image %>" alt="<%= s.about_badge %>" class="rounded-3xl shadow-2xl w-full object-cover" style="max-height: 480px;">
                 <div class="absolute -bottom-8 -right-8 w-48 h-48 bg-gradient-to-br from-karang-500 to-taruna-600 rounded-3xl flex items-center justify-center shadow-xl">
                     <div class="text-center text-white">
-                        <p class="text-4xl font-bold">35</p>
+                        <p class="text-4xl font-bold"><%= s.about_years %></p>
                         <p class="text-sm">Tahun Mengabdi</p>
                     </div>
                 </div>
             </div>
 
             <div class="space-y-6">
-                <div class="inline-block px-4 py-1 bg-taruna-100 text-taruna-700 rounded-full text-sm font-semibold">Tentang Kami</div>
+                <div class="inline-block px-4 py-1 bg-taruna-100 text-taruna-700 rounded-full text-sm font-semibold"><%= s.about_badge %></div>
                 <h2 class="text-4xl font-bold text-gray-900 leading-tight">
-                    Membangun Negeri Bersama <span class="text-karang-600">Pemuda Indonesia</span>
+                    <%= s.about_title %>
                 </h2>
                 <p class="text-gray-600 leading-relaxed">
-                    Karang Taruna didirikan sebagai wadah pengembangan kreativitas, inovasi, dan kontribusi sosial bagi generasi muda Indonesia. Kami percaya bahwa pemuda adalah agen perubahan yang mampu membawa Indonesia menuju masa depan yang lebih baik.
+                    <%= s.about_description1 %>
                 </p>
+                <% if (s.about_description2) { %>
                 <p class="text-gray-600 leading-relaxed">
-                    Dengan semangat kebersamaan dan gotong royong, Karang Taruna terus berkontribusi dalam berbagai bidang mulai dari sosial, pendidikan, lingkungan, hingga kewirausahaan.
+                    <%= s.about_description2 %>
                 </p>
+                <% } %>
 
                 <div class="flex gap-4 pt-4">
                     <a href="/kegiatan" class="px-6 py-3 bg-gradient-to-r from-karang-500 to-karang-600 text-white rounded-full font-semibold shadow-lg hover:shadow-xl transition-all">
@@ -45,7 +47,7 @@
                 </div>
                 <h3 class="text-2xl font-bold text-gray-900 mb-4">Visi</h3>
                 <p class="text-gray-700 leading-relaxed">
-                    Menjadikan Karang Taruna sebagai organisasi kepemudaan yang unggul, mandiri, dan berkontribusi aktif dalam pembangunan masyarakat, bangsa, dan negara.
+                    <%= s.about_visi %>
                 </p>
             </div>
             <div class="bg-gradient-to-br from-taruna-50 to-taruna-100 p-8 rounded-3xl border border-taruna-200">
@@ -54,10 +56,10 @@
                 </div>
                 <h3 class="text-2xl font-bold text-gray-900 mb-4">Misi</h3>
                 <ul class="space-y-3 text-gray-700">
-                    <li class="flex items-start gap-3"><i class="fas fa-check-circle text-taruna-500 mt-1"></i><span>Mengembangkan potensi dan kreativitas pemuda</span></li>
-                    <li class="flex items-start gap-3"><i class="fas fa-check-circle text-taruna-500 mt-1"></i><span>Membangun jaringan kerja sama antar pemuda</span></li>
-                    <li class="flex items-start gap-3"><i class="fas fa-check-circle text-taruna-500 mt-1"></i><span>Meningkatkan kontribusi sosial dan lingkungan</span></li>
-                    <li class="flex items-start gap-3"><i class="fas fa-check-circle text-taruna-500 mt-1"></i><span>Mendorong kewirausahaan dan inovasi pemuda</span></li>
+                    <% if (s.about_misi1) { %><li class="flex items-start gap-3"><i class="fas fa-check-circle text-taruna-500 mt-1"></i><span><%= s.about_misi1 %></span></li><% } %>
+                    <% if (s.about_misi2) { %><li class="flex items-start gap-3"><i class="fas fa-check-circle text-taruna-500 mt-1"></i><span><%= s.about_misi2 %></span></li><% } %>
+                    <% if (s.about_misi3) { %><li class="flex items-start gap-3"><i class="fas fa-check-circle text-taruna-500 mt-1"></i><span><%= s.about_misi3 %></span></li><% } %>
+                    <% if (s.about_misi4) { %><li class="flex items-start gap-3"><i class="fas fa-check-circle text-taruna-500 mt-1"></i><span><%= s.about_misi4 %></span></li><% } %>
                 </ul>
             </div>
         </div>
@@ -68,26 +70,34 @@
             <p class="text-gray-600 mt-2">Empat pilar utama kegiatan Karang Taruna Indonesia</p>
         </div>
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <% if (s.about_program1_title) { %>
             <div class="p-6 bg-karang-50 rounded-2xl border border-karang-100 hover:shadow-lg transition-shadow">
                 <i class="fas fa-hand-holding-heart text-karang-500 text-3xl mb-4"></i>
-                <h3 class="font-bold text-gray-900 text-lg">Sosial & Kemanusiaan</h3>
-                <p class="text-sm text-gray-500 mt-2">Program bantuan dan peduli sesama masyarakat.</p>
+                <h3 class="font-bold text-gray-900 text-lg"><%= s.about_program1_title %></h3>
+                <p class="text-sm text-gray-500 mt-2"><%= s.about_program1_desc %></p>
             </div>
+            <% } %>
+            <% if (s.about_program2_title) { %>
             <div class="p-6 bg-taruna-50 rounded-2xl border border-taruna-100 hover:shadow-lg transition-shadow">
                 <i class="fas fa-lightbulb text-taruna-500 text-3xl mb-4"></i>
-                <h3 class="font-bold text-gray-900 text-lg">Inovasi & Kreativitas</h3>
-                <p class="text-sm text-gray-500 mt-2">Pengembangan ide dan karya pemuda Indonesia.</p>
+                <h3 class="font-bold text-gray-900 text-lg"><%= s.about_program2_title %></h3>
+                <p class="text-sm text-gray-500 mt-2"><%= s.about_program2_desc %></p>
             </div>
+            <% } %>
+            <% if (s.about_program3_title) { %>
             <div class="p-6 bg-green-50 rounded-2xl border border-green-100 hover:shadow-lg transition-shadow">
                 <i class="fas fa-tree text-green-500 text-3xl mb-4"></i>
-                <h3 class="font-bold text-gray-900 text-lg">Lingkungan Hidup</h3>
-                <p class="text-sm text-gray-500 mt-2">Gerakan peduli dan menjaga lingkungan.</p>
+                <h3 class="font-bold text-gray-900 text-lg"><%= s.about_program3_title %></h3>
+                <p class="text-sm text-gray-500 mt-2"><%= s.about_program3_desc %></p>
             </div>
+            <% } %>
+            <% if (s.about_program4_title) { %>
             <div class="p-6 bg-purple-50 rounded-2xl border border-purple-100 hover:shadow-lg transition-shadow">
                 <i class="fas fa-graduation-cap text-purple-500 text-3xl mb-4"></i>
-                <h3 class="font-bold text-gray-900 text-lg">Pendidikan</h3>
-                <p class="text-sm text-gray-500 mt-2">Beasiswa dan pelatihan skill pemuda.</p>
+                <h3 class="font-bold text-gray-900 text-lg"><%= s.about_program4_title %></h3>
+                <p class="text-sm text-gray-500 mt-2"><%= s.about_program4_desc %></p>
             </div>
+            <% } %>
         </div>
     </div>
 </section>
