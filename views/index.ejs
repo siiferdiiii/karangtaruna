@@ -206,32 +206,36 @@ if(hdSlides.length>1)setInterval(hdNext,5000);
         <div class="logo-marquee-track flex gap-16 animate-logo-marquee whitespace-nowrap">
             <!-- First List -->
             <div class="flex items-center gap-16 shrink-0">
-                <% kolaborator.forEach(item => { %>
-                    <% if (item.link) { %>
-                        <a href="<%= item.link %>" target="_blank" rel="noopener noreferrer" class="logo-marquee-item block hover:scale-105 transition-transform duration-300 shrink-0" title="<%= item.nama %>">
-                            <img src="<%= item.logo %>" alt="<%= item.nama %>" class="h-12 w-auto max-w-[150px] object-contain filter grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-                        </a>
-                    <% } else { %>
-                        <div class="logo-marquee-item shrink-0" title="<%= item.nama %>">
-                            <img src="<%= item.logo %>" alt="<%= item.nama %>" class="h-12 w-auto max-w-[150px] object-contain filter grayscale opacity-60 hover:scale-105 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-                        </div>
-                    <% } %>
-                <% }) %>
+                <% for (let i = 0; i < 4; i++) { %>
+                    <% kolaborator.forEach(item => { %>
+                        <% if (item.link) { %>
+                            <a href="<%= item.link %>" target="_blank" rel="noopener noreferrer" class="logo-marquee-item block hover:scale-105 transition-transform duration-300 shrink-0" title="<%= item.nama %>">
+                                <img src="<%= item.logo %>" alt="<%= item.nama %>" class="h-12 w-auto max-w-[150px] object-contain filter grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                            </a>
+                        <% } else { %>
+                            <div class="logo-marquee-item shrink-0" title="<%= item.nama %>">
+                                <img src="<%= item.logo %>" alt="<%= item.nama %>" class="h-12 w-auto max-w-[150px] object-contain filter grayscale opacity-60 hover:scale-105 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                            </div>
+                        <% } %>
+                    <% }) %>
+                <% } %>
             </div>
             
             <!-- Duplicate List for seamless loop -->
             <div class="flex items-center gap-16 shrink-0" aria-hidden="true">
-                <% kolaborator.forEach(item => { %>
-                    <% if (item.link) { %>
-                        <a href="<%= item.link %>" target="_blank" rel="noopener noreferrer" class="logo-marquee-item block hover:scale-105 transition-transform duration-300 shrink-0" title="<%= item.nama %>">
-                            <img src="<%= item.logo %>" alt="<%= item.nama %>" class="h-12 w-auto max-w-[150px] object-contain filter grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-                        </a>
-                    <% } else { %>
-                        <div class="logo-marquee-item shrink-0" title="<%= item.nama %>">
-                            <img src="<%= item.logo %>" alt="<%= item.nama %>" class="h-12 w-auto max-w-[150px] object-contain filter grayscale opacity-60 hover:scale-105 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-                        </div>
-                    <% } %>
-                <% }) %>
+                <% for (let i = 0; i < 4; i++) { %>
+                    <% kolaborator.forEach(item => { %>
+                        <% if (item.link) { %>
+                            <a href="<%= item.link %>" target="_blank" rel="noopener noreferrer" class="logo-marquee-item block hover:scale-105 transition-transform duration-300 shrink-0" title="<%= item.nama %>">
+                                <img src="<%= item.logo %>" alt="<%= item.nama %>" class="h-12 w-auto max-w-[150px] object-contain filter grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                            </a>
+                        <% } else { %>
+                            <div class="logo-marquee-item shrink-0" title="<%= item.nama %>">
+                                <img src="<%= item.logo %>" alt="<%= item.nama %>" class="h-12 w-auto max-w-[150px] object-contain filter grayscale opacity-60 hover:scale-105 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                            </div>
+                        <% } %>
+                    <% }) %>
+                <% } %>
             </div>
         </div>
     </div>
