@@ -226,12 +226,6 @@ app.post('/daftar-anggota', async (req, res) => {
     } catch (err) { res.render('daftar-anggota', { title: 'Daftar Anggota Baru', route: '/', success: false }); }
 });
 
-app.get(/^\/google([a-zA-Z0-9]+)\.html$/, (req, res) => {
-    const code = req.params[0];
-    res.type('text/html');
-    res.send(`google-site-verification: google${code}.html`);
-});
-
 app.get('/sitemap.xml', async (req, res) => {
     try {
         const [beritaData, kegiatanData] = await Promise.all([getBerita(), getKegiatan()]);
