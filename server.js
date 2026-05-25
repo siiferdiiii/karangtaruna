@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 
 const {
-    getBerita, getBeritaBySlug, getBeritaById, incrementBeritaViews,
+    getBerita, getBeritaBySlug, getBeritaById, getBeritaPopuler, incrementBeritaViews,
     getKegiatan, getKegiatanById,
     getRegistrasi, createRegistrasi,
     getSettings
@@ -90,9 +90,15 @@ app.get('/berita/:slug', async (req, res) => {
         const item = await getBeritaBySlug(req.params.slug);
         if (!item) return res.status(404).render('404', { title: 'Tidak Ditemukan', route: '' });
         incrementBeritaViews(item.id, item.views).catch(() => {});
-        const allBerita = await getBerita({ kategori: item.kategori });
+        
+        // Fetch related and popular news in parallel
+        const [allBerita, populer] = await Promise.all([
+            getBerita({ kategori: item.kategori }),
+            getBeritaPopuler({ limit: 3, excludeId: item.id })
+        ]);
+        
         const related = allBerita.filter(b => b.id !== item.id).slice(0, 3);
-        res.render('detail-berita', { title: item.judul, route: '/berita', item, related });
+        res.render('detail-berita', { title: item.judul, route: '/berita', item, related, populer });
     } catch (err) {
         res.status(404).render('404', { title: 'Tidak Ditemukan', route: '' });
     }

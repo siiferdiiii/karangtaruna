@@ -25,6 +25,15 @@ async function getBeritaBySlug(slug) {
     return data;
 }
 
+async function getBeritaPopuler({ limit = 3, excludeId } = {}) {
+    let query = supabase.from('berita').select('*').order('views', { ascending: false });
+    if (excludeId) query = query.neq('id', excludeId);
+    query = query.limit(limit);
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+}
+
 async function incrementBeritaViews(id, currentViews) {
     await supabase.from('berita').update({ views: (currentViews || 0) + 1 }).eq('id', id);
 }
@@ -219,7 +228,7 @@ async function updateSettings(settingsObj) {
 }
 
 module.exports = {
-    getBerita, getBeritaById, getBeritaBySlug, incrementBeritaViews,
+    getBerita, getBeritaById, getBeritaBySlug, getBeritaPopuler, incrementBeritaViews,
     createBerita, updateBerita, deleteBerita,
     getKegiatan, getKegiatanById, createKegiatan, updateKegiatan, deleteKegiatan,
     getRegistrasi, createRegistrasi, deleteRegistrasi,
