@@ -158,7 +158,14 @@
         </div>
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <% kegiatan.forEach(item => { %>
-            <div class="group relative rounded-2xl overflow-hidden shadow-lg cursor-pointer h-72">
+            <div class="activity-card group relative rounded-2xl overflow-hidden shadow-lg cursor-pointer h-72"
+                 data-id="<%= item.id %>"
+                 data-judul="<%= item.judul %>"
+                 data-kategori="<%= item.kategori %>"
+                 data-lokasi="<%= item.lokasi %>"
+                 data-tanggal="<%= formatDate(item.tanggal) %>"
+                 data-gambar="<%= item.gambar %>"
+                 data-buka="<%= item.buka_pendaftaran %>">
                 <div class="h-full overflow-hidden"><img src="<%= item.gambar %>" alt="<%= item.judul %>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                 <div class="absolute bottom-0 left-0 right-0 p-6">
@@ -166,6 +173,8 @@
                     <h3 class="text-white font-bold text-lg"><%= item.judul %></h3>
                     <p class="text-gray-300 text-sm mt-1"><i class="fas fa-map-marker-alt mr-1"></i> <%= item.lokasi %>, <%= formatDateShort(item.tanggal) %></p>
                 </div>
+                <!-- Hidden Full Description for Modal -->
+                <div class="hidden-deskripsi hidden"><%- item.deskripsi %></div>
             </div>
             <% }) %>
         </div>
@@ -187,5 +196,8 @@ function hdGoTo(n){if(!hdSlides.length)return;hdSlides[hdCur].style.opacity=0;hd
 function hdNext(){hdGoTo(hdCur+1);}function hdPrev(){hdGoTo(hdCur-1);}
 if(hdSlides.length>1)setInterval(hdNext,5000);
 </script>
+
+<%- include('partials/kegiatan-modal') %>
+
 <%- include('partials/footer') %>
 <%- include('partials/scripts') %>
