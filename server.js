@@ -121,6 +121,21 @@ app.get('/kegiatan', async (req, res, next) => {
     }
 });
 
+app.get('/kegiatan/:id', async (req, res) => {
+    try {
+        const item = await getKegiatanById(req.params.id);
+        if (!item) return res.status(404).render('404', { title: 'Tidak Ditemukan', route: '' });
+        
+        // Ambil kegiatan terkait dari kategori yang sama
+        const allKegiatan = await getKegiatan({ kategori: item.kategori });
+        const related = allKegiatan.filter(k => k.id !== item.id).slice(0, 3);
+        
+        res.render('detail-kegiatan', { title: item.judul, route: '/kegiatan', item, related });
+    } catch (err) {
+        res.status(404).render('404', { title: 'Tidak Ditemukan', route: '' });
+    }
+});
+
 app.get('/galeri', async (req, res) => {
     try {
         const [beritaData, kegiatanData] = await Promise.all([getBerita(), getKegiatan()]);

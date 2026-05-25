@@ -1,0 +1,146 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<section class="pt-32 pb-24 bg-white min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Breadcrumb -->
+        <nav class="flex items-center text-sm text-gray-500 mb-8">
+            <a href="/" class="hover:text-karang-600 transition-colors">Beranda</a>
+            <i class="fas fa-chevron-right mx-2 text-xs"></i>
+            <a href="/kegiatan" class="hover:text-karang-600 transition-colors">Kegiatan</a>
+            <i class="fas fa-chevron-right mx-2 text-xs"></i>
+            <span class="text-gray-700 truncate max-w-xs"><%= item.judul %></span>
+        </nav>
+
+        <article class="mt-6">
+            <!-- Header Section -->
+            <div class="mb-8">
+                <span class="inline-block px-4 py-1.5 text-white text-xs font-bold rounded-full mb-4 uppercase tracking-wider
+                    <%= item.kategori === 'sosial' ? 'bg-karang-500' : item.kategori === 'lingkungan' ? 'bg-green-500' : item.kategori === 'kreativitas' ? 'bg-purple-500' : 'bg-taruna-500' %>">
+                    <%= item.kategori %>
+                </span>
+                <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-4"><%= item.judul %></h1>
+            </div>
+
+            <!-- Featured Image (Full bleed-style) -->
+            <div class="relative h-64 md:h-[450px] w-full rounded-3xl overflow-hidden shadow-md mb-12">
+                <img src="<%= item.gambar %>" alt="<%= item.judul %>" class="w-full h-full object-cover">
+            </div>
+
+            <!-- Split Content Grid -->
+            <div class="grid lg:grid-cols-3 gap-12 items-start">
+                
+                <!-- Main Content Left (2 Columns) -->
+                <div class="lg:col-span-2 space-y-8">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">Deskripsi Kegiatan</h2>
+                        <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed description-content">
+                            <%- item.deskripsi %>
+                        </div>
+                    </div>
+
+                    <!-- Share Section -->
+                    <div class="pt-8 border-t border-gray-100 flex items-center justify-between">
+                        <span class="text-gray-500 text-sm font-semibold">Bagikan kegiatan:</span>
+                        <div class="flex gap-3">
+                            <button class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-all"><i class="fab fa-facebook-f"></i></button>
+                            <button class="w-10 h-10 rounded-full bg-sky-500 text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-all"><i class="fab fa-twitter"></i></button>
+                            <button class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-all"><i class="fab fa-whatsapp"></i></button>
+                            <button class="w-10 h-10 rounded-full bg-gray-800 text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-all"><i class="fas fa-link"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detail / Call to Action Panel Right (1 Column) -->
+                <div class="lg:sticky lg:top-32 space-y-6">
+                    <div class="bg-gray-50 border border-gray-100 rounded-3xl p-6 sm:p-8 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-900 mb-6">Informasi Kegiatan</h3>
+                        
+                        <div class="space-y-5 mb-8">
+                            <!-- Lokasi -->
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-karang-100 text-karang-600 flex items-center justify-center shrink-0">
+                                    <i class="fas fa-map-marker-alt text-base"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Lokasi</p>
+                                    <p class="font-bold text-gray-800 text-sm sm:text-base"><%= item.lokasi || '-' %></p>
+                                </div>
+                            </div>
+                            
+                            <!-- Tanggal -->
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-taruna-100 text-taruna-600 flex items-center justify-center shrink-0">
+                                    <i class="far fa-calendar-alt text-base"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Tanggal Pelaksanaan</p>
+                                    <p class="font-bold text-gray-800 text-sm sm:text-base"><%= formatDate(item.tanggal) %></p>
+                                </div>
+                            </div>
+
+                            <!-- Status Pendaftaran -->
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl <%= item.buka_pendaftaran ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-500' %> flex items-center justify-center shrink-0">
+                                    <i class="fas <%= item.buka_pendaftaran ? 'fa-door-open' : 'fa-door-closed' %> text-base"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Status Registrasi</p>
+                                    <span class="inline-block px-2.5 py-0.5 mt-0.5 rounded-full text-xs font-bold uppercase tracking-wider
+                                        <%= item.buka_pendaftaran ? 'bg-green-200 text-green-800' : 'bg-gray-300 text-gray-600' %>">
+                                        <%= item.buka_pendaftaran ? 'Dibuka' : 'Ditutup' %>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CTA Button -->
+                        <% if (item.buka_pendaftaran) { %>
+                            <a href="/daftar-kegiatan/<%= item.id %>" class="w-full py-4 bg-gradient-to-r from-karang-500 to-karang-600 text-white rounded-2xl font-bold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 text-center">
+                                <i class="fas fa-user-plus"></i> Daftar Sekarang
+                            </a>
+                        <% } else { %>
+                            <button disabled class="w-full py-4 bg-gray-200 text-gray-400 rounded-2xl font-bold cursor-not-allowed flex items-center justify-center gap-2 text-center">
+                                <i class="fas fa-lock"></i> Pendaftaran Ditutup
+                            </button>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Related Activities Section -->
+        <% if (related.length > 0) { %>
+        <div class="mt-20 pt-12 border-t border-gray-100">
+            <h2 class="text-2xl font-bold text-gray-900 mb-8">Kegiatan Terkait</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <% related.forEach(rel => { %>
+                <a href="/kegiatan/<%= rel.id %>" class="group bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-50 flex flex-col">
+                    <div class="h-48 overflow-hidden relative shrink-0">
+                        <img src="<%= rel.gambar %>" alt="<%= rel.judul %>" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60"></div>
+                        <span class="absolute top-4 left-4 inline-block px-3 py-1 text-white text-xs font-bold rounded-full uppercase tracking-wider
+                            <%= rel.kategori === 'sosial' ? 'bg-karang-500' : rel.kategori === 'lingkungan' ? 'bg-green-500' : rel.kategori === 'kreativitas' ? 'bg-purple-500' : 'bg-taruna-500' %>">
+                            <%= rel.kategori %>
+                        </span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-lg line-clamp-2 group-hover:text-karang-600 transition-colors"><%= rel.judul %></h3>
+                            <p class="text-gray-400 text-xs mt-2 line-clamp-2"><%= stripHtml(rel.deskripsi) %></p>
+                        </div>
+                        <div class="flex items-center justify-between text-xs text-gray-500 mt-4 pt-4 border-t border-gray-50">
+                            <span><i class="fas fa-map-marker-alt text-karang-500 mr-1"></i><%= rel.lokasi %></span>
+                            <span><i class="far fa-calendar-alt text-karang-500 mr-1"></i><%= formatDateShort(rel.tanggal) %></span>
+                        </div>
+                    </div>
+                </a>
+                <% }) %>
+            </div>
+        </div>
+        <% } %>
+    </div>
+</section>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>
