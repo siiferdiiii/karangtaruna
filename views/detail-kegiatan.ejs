@@ -43,10 +43,21 @@
                     <div class="pt-8 border-t border-gray-100 flex items-center justify-between">
                         <span class="text-gray-500 text-sm font-semibold">Bagikan kegiatan:</span>
                         <div class="flex gap-3">
-                            <button class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-all"><i class="fab fa-facebook-f"></i></button>
-                            <button class="w-10 h-10 rounded-full bg-sky-500 text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-all"><i class="fab fa-twitter"></i></button>
-                            <button class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-all"><i class="fab fa-whatsapp"></i></button>
-                            <button class="w-10 h-10 rounded-full bg-gray-800 text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-all"><i class="fas fa-link"></i></button>
+                            <a id="share-facebook" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-all" title="Bagikan ke Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a id="share-twitter" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-sky-500 text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-all" title="Bagikan ke Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a id="share-whatsapp" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-all" title="Bagikan ke WhatsApp">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                            <button id="share-copy" class="w-10 h-10 rounded-full bg-gray-800 text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-all cursor-pointer relative" title="Salin Tautan">
+                                <i class="fas fa-link"></i>
+                                <span id="copy-tooltip" class="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs py-1.5 px-3 rounded-lg opacity-0 transition-opacity duration-300 pointer-events-none whitespace-nowrap shadow-md">
+                                    Tautan disalin!
+                                </span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -141,6 +152,40 @@
         <% } %>
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const pageUrl = encodeURIComponent(window.location.href);
+    const pageTitle = encodeURIComponent("<%= item.judul %>");
+
+    const fbBtn = document.getElementById('share-facebook');
+    const twBtn = document.getElementById('share-twitter');
+    const waBtn = document.getElementById('share-whatsapp');
+    const copyBtn = document.getElementById('share-copy');
+    const copyTooltip = document.getElementById('copy-tooltip');
+
+    if (fbBtn) fbBtn.href = `https://www.facebook.com/sharer/sharer.php?u=${pageUrl}`;
+    if (twBtn) twBtn.href = `https://twitter.com/intent/tweet?url=${pageUrl}&text=${pageTitle}`;
+    if (waBtn) waBtn.href = `https://api.whatsapp.com/send?text=${pageTitle}%20${pageUrl}`;
+
+    if (copyBtn) {
+        copyBtn.addEventListener('click', function() {
+            navigator.clipboard.writeText(window.location.href).then(function() {
+                if (copyTooltip) {
+                    copyTooltip.classList.remove('opacity-0');
+                    copyTooltip.classList.add('opacity-100');
+                    setTimeout(function() {
+                        copyTooltip.classList.remove('opacity-100');
+                        copyTooltip.classList.add('opacity-0');
+                    }, 2000);
+                }
+            }).catch(function(err) {
+                console.error('Gagal menyalin tautan: ', err);
+            });
+        });
+    }
+});
+</script>
 
 <%- include('partials/footer') %>
 <%- include('partials/scripts') %>
