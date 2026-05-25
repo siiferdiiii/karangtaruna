@@ -39,6 +39,17 @@ app.locals.activeRoute = (currentRoute, route) => {
 };
 app.locals.stripHtml = (str) => (str || '').replace(/<[^>]*>/g, '').trim();
 
+// ─── No-Cache untuk semua halaman dinamis (bukan static assets) ──────────────
+app.use((req, res, next) => {
+    const isStatic = /\.(css|js|jpe?g|png|gif|ico|webp|woff2?)$/i.test(req.path);
+    if (!isStatic) {
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.set('Pragma', 'no-cache');
+        res.set('Expires', '0');
+    }
+    next();
+});
+
 // ─── Load Settings Global (tersedia di semua template sebagai `s`) ───────────
 app.use(async (req, res, next) => {
     try {
