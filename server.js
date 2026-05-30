@@ -155,6 +155,7 @@ app.get('/kegiatan/:id', async (req, res) => {
         
         // Ambil kegiatan terkait dari kategori yang sama
         const allKegiatan = await getKegiatan({ kategori: item.kategori });
+        const related = allKegiatan.filter(k => k.id !== item.id).slice(0, 3);
         const cleanDesc = item.deskripsi ? item.deskripsi.replace(/<[^>]*>/g, '').substring(0, 160).trim() + '...' : item.judul;
         
         res.render('detail-kegiatan', { 
