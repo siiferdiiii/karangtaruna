@@ -1,5 +1,5 @@
 <% var isEdit = item !== null; %>
-<%- include('partials/header', { activePage: 'kegiatan', extraHead: '<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">' }) %>
+<%- include('partials/header', { activePage: 'kegiatan', extraHead: '<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet"><link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">' }) %>
 
 <div class="page-header">
     <div>
@@ -98,21 +98,65 @@
         <div class="form-sidebar">
             <div class="section-card">
                 <h3 class="card-subtitle">Gambar Kegiatan</h3>
-                <% if (isEdit && item.gambar) { %>
-                <div id="previewBox">
-                    <img id="imgPreview" src="<%= item.gambar %>" alt="Preview" class="img-preview">
-                </div>
-                <% } else { %>
-                <div id="previewBox" class="hidden">
-                    <img id="imgPreview" src="" alt="Preview" class="img-preview">
+
+                <!-- Hidden input penampung hasil crop (base64) -->
+                <input type="hidden" name="gambar_crop" id="gambarCropInput">
+
+                <!-- Badge wajib crop -->
+                <% if (!isEdit || !item.gambar) { %>
+                <div id="cropRequiredBadge" class="crop-required-badge">
+                    <i class="fas fa-crop-alt"></i> Wajib pilih &amp; crop gambar sebelum menyimpan
                 </div>
                 <% } %>
-                <label class="upload-area" for="gambarInput">
+
+                <!-- Preview hasil crop -->
+                <div id="previewBox" class="<%= (isEdit && item.gambar) ? '' : 'hidden' %>">
+                    <img id="imgPreview" src="<%= (isEdit && item.gambar) ? item.gambar : '' %>" alt="Preview" class="img-preview">
+                    <button type="button" class="crop-reopen-btn" id="cropReopenBtn">
+                        <i class="fas fa-crop-alt"></i> Crop Ulang
+                    </button>
+                </div>
+
+                <!-- Upload area -->
+                <label class="upload-area" for="gambarInput" id="uploadAreaLabel">
                     <i class="fas fa-cloud-upload-alt"></i>
                     <span>Klik atau drag gambar ke sini</span>
-                    <small>JPG, PNG, WebP — Maks. 5MB</small>
-                    <input type="file" name="gambar" id="gambarInput" accept="image/*" style="display:none">
+                    <small>JPG, PNG, WebP — Maks. 5MB &bull; Rasio 4:3</small>
+                    <input type="file" id="gambarInput" accept="image/*" style="display:none">
                 </label>
+
+                <style>
+                .crop-required-badge {
+                    background: rgba(234,179,8,0.12);
+                    border: 1px solid rgba(234,179,8,0.3);
+                    color: #fbbf24;
+                    border-radius: 8px;
+                    padding: 0.5rem 0.75rem;
+                    font-size: 0.78rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    margin-bottom: 0.75rem;
+                }
+                .img-preview { width:100%; border-radius:8px; display:block; }
+                #previewBox { position:relative; margin-bottom:0.75rem; }
+                .crop-reopen-btn {
+                    position: absolute;
+                    bottom: 8px; right: 8px;
+                    background: rgba(0,0,0,0.65);
+                    color: #fff;
+                    border: none;
+                    border-radius: 6px;
+                    padding: 0.35rem 0.75rem;
+                    font-size: 0.75rem;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.4rem;
+                    transition: background 0.2s;
+                }
+                .crop-reopen-btn:hover { background: rgba(99,102,241,0.8); }
+                </style>
             </div>
 
             <div class="form-actions">
@@ -146,25 +190,60 @@
     quill.root.innerHTML = <%- JSON.stringify(item.deskripsi) %>;
     <% } %>
 
-    document.getElementById('kegiatanForm').addEventListener('submit', function() {
-        document.getElementById('deskripsiInput').value = quill.root.innerHTML;
-    });
+    // (Submit handler dipindah ke bawah, setelah event crop)
+
+    // ─── Crop: Kegiatan (4:3) ─────────────────────────────────
+    var _kegiatanOrigSrc = null;
+
+    function applyCropResult(dataURL) {
+        document.getElementById('gambarCropInput').value = dataURL;
+        document.getElementById('imgPreview').src = dataURL;
+        document.getElementById('previewBox').classList.remove('hidden');
+        var badge = document.getElementById('cropRequiredBadge');
+        if (badge) badge.style.display = 'none';
+        document.getElementById('uploadAreaLabel').style.display = 'none';
+        _kegiatanOrigSrc = dataURL;
+    }
 
     document.getElementById('gambarInput').addEventListener('change', function() {
         var file = this.files[0];
-        if (file) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('imgPreview').src = e.target.result;
-                document.getElementById('previewBox').classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            _kegiatanOrigSrc = e.target.result;
+            window._openCropModal(e.target.result, 4/3, applyCropResult);
+        };
+        reader.readAsDataURL(file);
+        this.value = '';
     });
+
+    // Tombol crop ulang
+    var reopenBtn = document.getElementById('cropReopenBtn');
+    if (reopenBtn) {
+        reopenBtn.addEventListener('click', function() {
+            var src = _kegiatanOrigSrc || document.getElementById('imgPreview').src;
+            if (src) window._openCropModal(src, 4/3, applyCropResult);
+        });
+    }
+
+    // Validasi wajib crop sebelum submit
+    document.getElementById('kegiatanForm').addEventListener('submit', function(e) {
+        document.getElementById('deskripsiInput').value = quill.root.innerHTML;
+        var cropVal = document.getElementById('gambarCropInput').value;
+        var isEdit  = <%= isEdit ? 'true' : 'false' %>;
+        if (!cropVal && !isEdit) {
+            e.preventDefault();
+            alert('⚠️ Wajib memilih dan crop gambar sebelum menyimpan kegiatan.');
+            return false;
+        }
+    }, true);
 
     document.getElementById('bukaPendaftaran').addEventListener('change', function() {
         document.getElementById('pendaftaranInfo').style.display = this.checked ? 'block' : 'none';
     });
 </script>
 
+<!-- Cropper.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+<%- include('partials/_crop-modal') %>
 <%- include('partials/footer', { extraScript: '' }) %>

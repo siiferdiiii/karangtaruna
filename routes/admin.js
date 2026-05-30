@@ -25,6 +25,14 @@ const upload = multer({
     }
 });
 
+// ─── Helper: decode base64 crop result → Buffer ───────────────────────────────
+function decodeBase64Image(dataURL) {
+    // dataURL: "data:image/jpeg;base64,/9j/4AAQ..."
+    const base64Data = dataURL.replace(/^data:image\/\w+;base64,/, '');
+    const buffer = Buffer.from(base64Data, 'base64');
+    return buffer;
+}
+
 // ─── Cookie config ────────────────────────────────────────────────────────────
 const COOKIE_NAME = '_kt_admin';
 const COOKIE_OPTS = {
@@ -136,7 +144,14 @@ router.post('/berita/tambah', isAuthenticated, upload.single('gambar'), async (r
     try {
         const { judul, ringkasan, konten, kategori, penulis, tag, tanggal } = req.body;
         let gambar = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=500&fit=crop';
-        if (req.file) gambar = await uploadImage(req.file.buffer, req.file.originalname, req.file.mimetype);
+        if (req.body.gambar_crop) {
+            // Gambar dari hasil crop (base64)
+            const buf = decodeBase64Image(req.body.gambar_crop);
+            gambar = await uploadImage(buf, 'crop-' + Date.now() + '.jpg', 'image/jpeg');
+        } else if (req.file) {
+            // Fallback: upload langsung (jika JS dinonaktifkan)
+            gambar = await uploadImage(req.file.buffer, req.file.originalname, req.file.mimetype);
+        }
         const slug = await ensureUniqueSlugDB(generateSlug(judul));
         await createBerita({ slug, judul, ringkasan, konten, kategori, tanggal: tanggal || new Date().toISOString().split('T')[0], penulis: penulis || 'Admin', gambar, views: 0, tag: tag ? tag.split(',').map(t => t.trim()).filter(Boolean) : [] });
         res.redirect('/admin/berita?success=' + encodeURIComponent(`Berita "${judul}" berhasil ditambahkan!`));
@@ -159,7 +174,13 @@ router.post('/berita/edit/:id', isAuthenticated, upload.single('gambar'), async 
         if (!item) return res.redirect('/admin/berita');
         const { judul, ringkasan, konten, kategori, penulis, tag, slug: slugInput, tanggal } = req.body;
         let gambar = item.gambar;
-        if (req.file) {
+        if (req.body.gambar_crop) {
+            // Gambar baru dari hasil crop
+            if (item.gambar && item.gambar.includes('supabase')) await deleteImage(item.gambar);
+            const buf = decodeBase64Image(req.body.gambar_crop);
+            gambar = await uploadImage(buf, 'crop-' + Date.now() + '.jpg', 'image/jpeg');
+        } else if (req.file) {
+            // Fallback
             if (item.gambar && item.gambar.includes('supabase')) await deleteImage(item.gambar);
             gambar = await uploadImage(req.file.buffer, req.file.originalname, req.file.mimetype);
         }
@@ -202,7 +223,12 @@ router.post('/kegiatan/tambah', isAuthenticated, upload.single('gambar'), async 
     try {
         const { judul, kategori, lokasi, tanggal, deskripsi, buka_pendaftaran, pendaftaran_dibuka, pendaftaran_ditutup } = req.body;
         let gambar = 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&h=400&fit=crop';
-        if (req.file) gambar = await uploadImage(req.file.buffer, req.file.originalname, req.file.mimetype);
+        if (req.body.gambar_crop) {
+            const buf = decodeBase64Image(req.body.gambar_crop);
+            gambar = await uploadImage(buf, 'crop-' + Date.now() + '.jpg', 'image/jpeg');
+        } else if (req.file) {
+            gambar = await uploadImage(req.file.buffer, req.file.originalname, req.file.mimetype);
+        }
         await createKegiatan({ 
             judul, 
             kategori, 
@@ -234,7 +260,11 @@ router.post('/kegiatan/edit/:id', isAuthenticated, upload.single('gambar'), asyn
         if (!item) return res.redirect('/admin/kegiatan');
         const { judul, kategori, lokasi, tanggal, deskripsi, buka_pendaftaran, pendaftaran_dibuka, pendaftaran_ditutup } = req.body;
         let gambar = item.gambar;
-        if (req.file) {
+        if (req.body.gambar_crop) {
+            if (item.gambar?.includes('supabase')) await deleteImage(item.gambar);
+            const buf = decodeBase64Image(req.body.gambar_crop);
+            gambar = await uploadImage(buf, 'crop-' + Date.now() + '.jpg', 'image/jpeg');
+        } else if (req.file) {
             if (item.gambar?.includes('supabase')) await deleteImage(item.gambar);
             gambar = await uploadImage(req.file.buffer, req.file.originalname, req.file.mimetype);
         }
@@ -303,17 +333,27 @@ router.get('/galeri/upload', isAuthenticated, (req, res) => {
     res.render('admin/galeri-upload', { title: 'Upload Galeri', adminUser: req.adminUser, error: null });
 });
 
-router.post('/galeri/upload', isAuthenticated, upload.array('gambar', 10), async (req, res) => {
+router.post('/galeri/upload', isAuthenticated, upload.none(), async (req, res) => {
     try {
         const { judul, kategori, deskripsi } = req.body;
-        if (!req.files || req.files.length === 0) {
-            return res.redirect('/admin/galeri/upload?error=' + encodeURIComponent('Pilih minimal satu gambar!'));
+        // Ambil array crop results (base64)
+        let crops = req.body['gambar_crop[]'] || req.body.gambar_crop || [];
+        let names = req.body['gambar_crop_name[]'] || req.body.gambar_crop_name || [];
+        if (!Array.isArray(crops)) crops = [crops];
+        if (!Array.isArray(names)) names = [names];
+        if (crops.length === 0 || (crops.length === 1 && !crops[0])) {
+            return res.redirect('/admin/galeri/upload?error=' + encodeURIComponent('Pilih minimal satu gambar dan selesaikan crop!'));
         }
-        for (const file of req.files) {
-            const gambar_url = await uploadImage(file.buffer, file.originalname, file.mimetype);
+        let count = 0;
+        for (let i = 0; i < crops.length; i++) {
+            if (!crops[i]) continue;
+            const buf = decodeBase64Image(crops[i]);
+            const fname = names[i] || ('crop-' + Date.now() + '-' + i + '.jpg');
+            const gambar_url = await uploadImage(buf, fname, 'image/jpeg');
             await createGaleri({ judul, kategori: kategori || 'umum', deskripsi, gambar_url });
+            count++;
         }
-        res.redirect('/admin/galeri?success=' + encodeURIComponent(`${req.files.length} gambar berhasil diupload!`));
+        res.redirect('/admin/galeri?success=' + encodeURIComponent(`${count} gambar berhasil diupload!`));
     } catch (err) {
         res.redirect('/admin/galeri/upload?error=' + encodeURIComponent('Gagal upload: ' + err.message));
     }

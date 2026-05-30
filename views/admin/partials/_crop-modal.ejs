@@ -1,0 +1,235 @@
+<%# 
+  _crop-modal.ejs — Modal Crop Gambar (Cropper.js)
+  Digunakan di: berita-form, kegiatan-form, galeri-upload
+  
+  Variabel yang harus tersedia di halaman pemanggil:
+    - window._cropAspectRatio  (number, mis. 16/9 atau 4/3)
+    - window._cropCallback(dataURL) (function dipanggil setelah crop selesai)
+%>
+
+<!-- ═══════════════════════════════════════════════════ CROP MODAL ══ -->
+<div id="cropModal" role="dialog" aria-modal="true" aria-label="Crop Gambar">
+  <div class="crop-backdrop"></div>
+  <div class="crop-dialog">
+    <div class="crop-header">
+      <span class="crop-title"><i class="fas fa-crop-alt"></i> Sesuaikan Gambar</span>
+      <span class="crop-hint">Geser & zoom area crop sesuai kebutuhan</span>
+    </div>
+    <div class="crop-body">
+      <div class="crop-canvas-wrap">
+        <img id="cropperImage" src="" alt="Gambar untuk di-crop">
+      </div>
+      <div class="crop-controls">
+        <button type="button" class="crop-ctrl-btn" id="cropRotateL" title="Putar kiri">
+          <i class="fas fa-undo"></i>
+        </button>
+        <button type="button" class="crop-ctrl-btn" id="cropRotateR" title="Putar kanan">
+          <i class="fas fa-redo"></i>
+        </button>
+        <button type="button" class="crop-ctrl-btn" id="cropFlipH" title="Balik horizontal">
+          <i class="fas fa-arrows-alt-h"></i>
+        </button>
+        <button type="button" class="crop-ctrl-btn" id="cropFlipV" title="Balik vertikal">
+          <i class="fas fa-arrows-alt-v"></i>
+        </button>
+        <button type="button" class="crop-ctrl-btn" id="cropZoomIn" title="Perbesar">
+          <i class="fas fa-search-plus"></i>
+        </button>
+        <button type="button" class="crop-ctrl-btn" id="cropZoomOut" title="Perkecil">
+          <i class="fas fa-search-minus"></i>
+        </button>
+        <button type="button" class="crop-ctrl-btn" id="cropReset" title="Reset">
+          <i class="fas fa-sync-alt"></i>
+        </button>
+      </div>
+    </div>
+    <div class="crop-footer">
+      <button type="button" class="btn btn-ghost" id="cropCancelBtn">
+        <i class="fas fa-times"></i> Batal
+      </button>
+      <button type="button" class="btn btn-primary" id="cropConfirmBtn">
+        <i class="fas fa-check"></i> Crop &amp; Gunakan
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+/* ─── Crop Modal ────────────────────────────────────────── */
+#cropModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+#cropModal.active { display: flex; }
+
+.crop-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 20, 0.88);
+  backdrop-filter: blur(6px);
+}
+
+.crop-dialog {
+  position: relative;
+  z-index: 1;
+  background: #1a1a2e;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  width: min(92vw, 800px);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+  overflow: hidden;
+  animation: cropSlideIn 0.25s ease;
+}
+
+@keyframes cropSlideIn {
+  from { opacity:0; transform: translateY(20px) scale(0.97); }
+  to   { opacity:1; transform: translateY(0) scale(1); }
+}
+
+.crop-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.crop-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.crop-title i { color: #6366f1; }
+.crop-hint {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin-left: auto;
+}
+
+.crop-body { padding: 1rem 1.25rem 0; }
+
+.crop-canvas-wrap {
+  background: #0f0f1a;
+  border-radius: 10px;
+  overflow: hidden;
+  max-height: 55vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.crop-canvas-wrap img { max-width: 100%; display: block; }
+
+.crop-controls {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.crop-ctrl-btn {
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: #94a3b8;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.8rem;
+}
+.crop-ctrl-btn:hover {
+  background: rgba(99,102,241,0.2);
+  border-color: #6366f1;
+  color: #a5b4fc;
+}
+
+.crop-footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+</style>
+
+<script>
+(function() {
+  var _cropperInstance = null;
+  var _flipX = 1, _flipY = 1;
+
+  function openCropModal(src, aspectRatio, callback) {
+    var modal = document.getElementById('cropModal');
+    var img   = document.getElementById('cropperImage');
+    _flipX = 1; _flipY = 1;
+
+    // Reset & set image
+    img.src = src;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    // Destroy old instance
+    if (_cropperInstance) { _cropperInstance.destroy(); _cropperInstance = null; }
+
+    // Init Cropper.js
+    _cropperInstance = new Cropper(img, {
+      aspectRatio: aspectRatio || NaN,
+      viewMode: 1,
+      dragMode: 'move',
+      autoCropArea: 0.85,
+      restore: false,
+      guides: true,
+      center: true,
+      highlight: false,
+      cropBoxMovable: true,
+      cropBoxResizable: true,
+      toggleDragModeOnDblclick: false,
+      background: true,
+      responsive: true,
+    });
+
+    // Confirm
+    document.getElementById('cropConfirmBtn').onclick = function() {
+      var canvas = _cropperInstance.getCroppedCanvas({ maxWidth: 1600, maxHeight: 1600, fillColor: '#fff' });
+      var dataURL = canvas.toDataURL('image/jpeg', 0.88);
+      closeCropModal();
+      if (typeof callback === 'function') callback(dataURL);
+    };
+
+    // Cancel
+    document.getElementById('cropCancelBtn').onclick = closeCropModal;
+    document.querySelector('.crop-backdrop').onclick = closeCropModal;
+  }
+
+  function closeCropModal() {
+    document.getElementById('cropModal').classList.remove('active');
+    document.body.style.overflow = '';
+    if (_cropperInstance) { _cropperInstance.destroy(); _cropperInstance = null; }
+  }
+
+  // Control buttons
+  document.getElementById('cropRotateL').onclick  = function() { _cropperInstance && _cropperInstance.rotate(-90); };
+  document.getElementById('cropRotateR').onclick  = function() { _cropperInstance && _cropperInstance.rotate(90); };
+  document.getElementById('cropFlipH').onclick    = function() { _flipX *= -1; _cropperInstance && _cropperInstance.scaleX(_flipX); };
+  document.getElementById('cropFlipV').onclick    = function() { _flipY *= -1; _cropperInstance && _cropperInstance.scaleY(_flipY); };
+  document.getElementById('cropZoomIn').onclick   = function() { _cropperInstance && _cropperInstance.zoom(0.1); };
+  document.getElementById('cropZoomOut').onclick  = function() { _cropperInstance && _cropperInstance.zoom(-0.1); };
+  document.getElementById('cropReset').onclick    = function() { _flipX=1; _flipY=1; _cropperInstance && _cropperInstance.reset(); };
+
+  // ESC key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && document.getElementById('cropModal').classList.contains('active')) closeCropModal();
+  });
+
+  // Expose globally
+  window._openCropModal = openCropModal;
+})();
+</script>

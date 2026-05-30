@@ -1,4 +1,4 @@
-<%- include('partials/header', { activePage: 'galeri', extraHead: '' }) %>
+<%- include('partials/header', { activePage: 'galeri', extraHead: '<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">' }) %>
 
 <div class="page-header">
     <div>
@@ -35,22 +35,40 @@
 
             <div class="section-card">
                 <h3 class="card-subtitle">Pilih Gambar <span class="required">*</span></h3>
-                <p class="help-text" style="margin-bottom:12px">Bisa pilih lebih dari satu gambar sekaligus</p>
-                
-                <!-- Preview area -->
+                <p class="help-text" style="margin-bottom:12px">
+                    Pilih satu atau lebih gambar. Setiap gambar akan melewati proses crop sebelum diupload.
+                </p>
+
+                <!-- Antrian crop -->
+                <div id="cropQueue" class="galeri-crop-queue" style="display:none">
+                    <div class="crop-queue-header">
+                        <i class="fas fa-layer-group"></i>
+                        <span id="cropQueueInfo">Menunggu...</span>
+                    </div>
+                    <div class="crop-queue-progress">
+                        <div class="crop-queue-bar" id="cropQueueBar"></div>
+                    </div>
+                </div>
+
+                <!-- Grid preview hasil crop -->
                 <div id="previewGrid" class="galeri-grid" style="margin-bottom:16px"></div>
 
-                <label class="upload-area" for="gambarInput" id="uploadLabel">
+                <!-- Upload area -->
+                <label class="upload-area" for="gambarInput" id="uploadAreaLabel">
                     <i class="fas fa-cloud-upload-alt"></i>
                     <span>Klik atau drag gambar ke sini</span>
-                    <small>JPG, PNG, WebP — Maks. 5MB per file</small>
-                    <input type="file" name="gambar" id="gambarInput" accept="image/*" multiple style="display:none">
+                    <small>JPG, PNG, WebP — Maks. 5MB per file &bull; Rasio 4:3</small>
+                    <input type="file" id="gambarInput" accept="image/*" multiple style="display:none">
                 </label>
+
+                <!-- Hidden inputs hasil crop akan di-inject di sini -->
+                <div id="cropHiddenInputs"></div>
             </div>
 
             <div class="form-actions" style="margin-top:16px">
-                <button type="submit" class="btn btn-primary btn-full">
+                <button type="submit" class="btn btn-primary btn-full" id="submitBtn" disabled>
                     <i class="fas fa-cloud-upload-alt"></i> Upload ke Galeri
+                    <span id="submitCount"></span>
                 </button>
                 <a href="/admin/galeri" class="btn btn-ghost btn-full">Batal</a>
             </div>
@@ -64,31 +82,291 @@
                 <li>Format: JPG, PNG, WebP, GIF</li>
                 <li>Ukuran max: 5MB per file</li>
                 <li>Bisa upload banyak gambar sekaligus</li>
+                <li>Setiap gambar harus di-crop (rasio 4:3)</li>
                 <li>Gambar akan tampil di halaman Galeri publik</li>
                 <li>Resolusi rekomendasi: min 800×600px</li>
             </ul>
         </div>
+
+        <!-- Status box -->
+        <div class="section-card" id="statusBox" style="display:none">
+            <h3 class="card-subtitle"><i class="fas fa-check-circle" style="color:#22c55e"></i> Siap Upload</h3>
+            <div id="statusList" style="font-size:13px;color:var(--text-muted);line-height:1.8"></div>
+        </div>
     </div>
 </div>
 
-<%- include('partials/footer', { extraScript: '' }) %>
+<style>
+.galeri-crop-queue {
+    background: rgba(99,102,241,0.08);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 12px;
+}
+.crop-queue-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #a5b4fc;
+    margin-bottom: 0.5rem;
+}
+.crop-queue-progress {
+    background: rgba(255,255,255,0.07);
+    border-radius: 99px;
+    height: 6px;
+    overflow: hidden;
+}
+.crop-queue-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #6366f1, #818cf8);
+    border-radius: 99px;
+    transition: width 0.35s ease;
+    width: 0%;
+}
+.galeri-crop-card {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid rgba(255,255,255,0.08);
+    background: #0f0f1a;
+}
+.galeri-crop-card.done { border-color: #22c55e44; }
+.galeri-crop-card .gc-badge {
+    position: absolute;
+    top: 6px; right: 6px;
+    background: #22c55e;
+    color: #fff;
+    border-radius: 99px;
+    font-size: 10px;
+    padding: 2px 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.galeri-crop-card .gc-recrop {
+    position: absolute;
+    bottom: 6px; right: 6px;
+    background: rgba(0,0,0,0.65);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.25rem 0.6rem;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: background 0.2s;
+}
+.galeri-crop-card .gc-recrop:hover { background: rgba(99,102,241,0.8); }
+.galeri-crop-card .gc-remove {
+    position: absolute;
+    top: 6px; left: 6px;
+    background: rgba(239,68,68,0.8);
+    color: #fff;
+    border: none;
+    border-radius: 99px;
+    width: 22px; height: 22px;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+.galeri-crop-card .gc-remove:hover { background: #ef4444; }
+</style>
+
+<!-- Cropper.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+<%- include('partials/_crop-modal') %>
+
 <script>
-document.getElementById('gambarInput').addEventListener('change', function() {
-    const preview = document.getElementById('previewGrid');
-    preview.innerHTML = '';
-    Array.from(this.files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = e => {
-            const card = document.createElement('div');
-            card.className = 'galeri-card';
-            card.style.position = 'relative';
-            card.innerHTML = '<div class="galeri-img-wrap"><img src="' + e.target.result + '" class="galeri-img" style="height:140px"></div><div class="galeri-info"><div class="galeri-title" style="font-size:11px">' + file.name + '</div></div>';
-            preview.appendChild(card);
+(function() {
+    // ─── State ────────────────────────────────────────────────
+    var _items = [];      // [{id, name, origSrc, croppedDataURL}]
+    var _idCounter = 0;
+    var _queueIndex = 0;  // indeks antrian crop saat ini
+    var _queueFiles = []; // antrian File[] sebelum di-crop
+
+    // ─── UI helpers ───────────────────────────────────────────
+    function renderCards() {
+        var grid = document.getElementById('previewGrid');
+        grid.innerHTML = '';
+        _items.forEach(function(item) {
+            var card = document.createElement('div');
+            card.className = 'galeri-card galeri-crop-card' + (item.croppedDataURL ? ' done' : '');
+            card.id = 'card-' + item.id;
+            card.innerHTML =
+                '<div class="galeri-img-wrap">' +
+                    '<img src="' + (item.croppedDataURL || item.origSrc) + '" class="galeri-img" style="height:140px;object-fit:cover">' +
+                '</div>' +
+                '<div class="galeri-info">' +
+                    '<div class="galeri-title" style="font-size:11px">' + item.name + '</div>' +
+                '</div>' +
+                (item.croppedDataURL ? '<div class="gc-badge"><i class="fas fa-check"></i> Cropped</div>' : '') +
+                '<button type="button" class="gc-recrop" data-id="' + item.id + '">' +
+                    '<i class="fas fa-crop-alt"></i> ' + (item.croppedDataURL ? 'Crop Ulang' : 'Crop') +
+                '</button>' +
+                '<button type="button" class="gc-remove" data-id="' + item.id + '" title="Hapus"><i class="fas fa-times"></i></button>';
+            grid.appendChild(card);
+        });
+
+        // Bind events
+        grid.querySelectorAll('.gc-recrop').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var id = parseInt(this.dataset.id);
+                var item = _items.find(function(i) { return i.id === id; });
+                if (!item) return;
+                var src = item.croppedDataURL || item.origSrc;
+                window._openCropModal(src, 4/3, function(dataURL) {
+                    item.croppedDataURL = dataURL;
+                    renderCards();
+                    syncHiddenInputs();
+                    updateSubmitBtn();
+                });
+            });
+        });
+
+        grid.querySelectorAll('.gc-remove').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var id = parseInt(this.dataset.id);
+                _items = _items.filter(function(i) { return i.id !== id; });
+                renderCards();
+                syncHiddenInputs();
+                updateSubmitBtn();
+                if (_items.length === 0) {
+                    document.getElementById('uploadAreaLabel').style.display = '';
+                    document.getElementById('statusBox').style.display = 'none';
+                }
+            });
+        });
+    }
+
+    function syncHiddenInputs() {
+        var container = document.getElementById('cropHiddenInputs');
+        container.innerHTML = '';
+        _items.forEach(function(item) {
+            if (item.croppedDataURL) {
+                var inp = document.createElement('input');
+                inp.type = 'hidden';
+                inp.name = 'gambar_crop[]';
+                inp.value = item.croppedDataURL;
+                container.appendChild(inp);
+
+                var nameInp = document.createElement('input');
+                nameInp.type = 'hidden';
+                nameInp.name = 'gambar_crop_name[]';
+                nameInp.value = item.name;
+                container.appendChild(nameInp);
+            }
+        });
+    }
+
+    function updateSubmitBtn() {
+        var done  = _items.filter(function(i) { return i.croppedDataURL; }).length;
+        var total = _items.length;
+        var btn   = document.getElementById('submitBtn');
+        var info  = document.getElementById('submitCount');
+        btn.disabled = (done === 0 || done < total);
+        info.textContent = total > 0 ? ' (' + done + '/' + total + ' siap)' : '';
+
+        // Status box
+        if (done > 0) {
+            document.getElementById('statusBox').style.display = 'block';
+            var lines = _items.map(function(i) {
+                return '<div>' +
+                    (i.croppedDataURL
+                        ? '<i class="fas fa-check-circle" style="color:#22c55e"></i> '
+                        : '<i class="fas fa-clock" style="color:#f59e0b"></i> ') +
+                    ' ' + i.name + '</div>';
+            });
+            document.getElementById('statusList').innerHTML = lines.join('');
+        } else {
+            document.getElementById('statusBox').style.display = 'none';
+        }
+    }
+
+    // ─── Crop Queue (sequential) ──────────────────────────────
+    function startCropQueue(files) {
+        if (files.length === 0) return;
+        _queueFiles = Array.from(files);
+        _queueIndex = 0;
+        updateQueueProgress();
+        cropNextInQueue();
+    }
+
+    function updateQueueProgress() {
+        var total   = _queueFiles.length;
+        var done    = _queueIndex;
+        var pct     = total > 0 ? (done / total * 100) : 0;
+        document.getElementById('cropQueue').style.display = 'block';
+        document.getElementById('cropQueueInfo').textContent =
+            'Crop gambar ' + (done + 1) + ' dari ' + total + ' — ' + _queueFiles[done]?.name;
+        document.getElementById('cropQueueBar').style.width = pct + '%';
+    }
+
+    function cropNextInQueue() {
+        if (_queueIndex >= _queueFiles.length) {
+            // Selesai semua
+            document.getElementById('cropQueue').style.display = 'none';
+            return;
+        }
+        var file = _queueFiles[_queueIndex];
+        var id   = ++_idCounter;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            // Tambah ke items state dengan origSrc
+            _items.push({ id: id, name: file.name, origSrc: e.target.result, croppedDataURL: null });
+            renderCards();
+
+            // Buka modal crop untuk file ini
+            window._openCropModal(e.target.result, 4/3, function(dataURL) {
+                var item = _items.find(function(i) { return i.id === id; });
+                if (item) item.croppedDataURL = dataURL;
+                renderCards();
+                syncHiddenInputs();
+                updateSubmitBtn();
+
+                // Lanjut ke file berikutnya
+                _queueIndex++;
+                if (_queueIndex < _queueFiles.length) {
+                    updateQueueProgress();
+                    cropNextInQueue();
+                } else {
+                    document.getElementById('cropQueue').style.display = 'none';
+                }
+            });
         };
         reader.readAsDataURL(file);
-    });
-    if (this.files.length > 0) {
-        document.getElementById('uploadLabel').style.borderColor = '#22c55e';
     }
-});
+
+    // ─── File input change ────────────────────────────────────
+    document.getElementById('gambarInput').addEventListener('change', function() {
+        if (!this.files || this.files.length === 0) return;
+        document.getElementById('uploadAreaLabel').style.display = 'none';
+        startCropQueue(this.files);
+        this.value = ''; // reset supaya bisa pilih ulang file yang sama
+    });
+
+    // ─── Submit validation ────────────────────────────────────
+    document.getElementById('galeriForm').addEventListener('submit', function(e) {
+        var done  = _items.filter(function(i) { return i.croppedDataURL; }).length;
+        var total = _items.length;
+        if (done === 0) {
+            e.preventDefault();
+            alert('⚠️ Wajib memilih minimal satu gambar dan menyelesaikan crop sebelum upload.');
+            return false;
+        }
+        if (done < total) {
+            e.preventDefault();
+            alert('⚠️ Masih ada ' + (total - done) + ' gambar yang belum di-crop. Selesaikan crop semua gambar terlebih dahulu.');
+            return false;
+        }
+    });
+})();
 </script>
+
+<%- include('partials/footer', { extraScript: '' }) %>
