@@ -283,7 +283,15 @@ const DEFAULT_SETTINGS = {
     about_program3_desc: 'Gerakan peduli dan menjaga lingkungan.',
     about_program4_title: 'Pendidikan',
     about_program4_desc: 'Beasiswa dan pelatihan skill pemuda.',
-    google_verification: ''
+    google_verification: '',
+    struktur_image: '',
+    struktur_hero_image: '',
+    struktur_judul: 'Struktur Organisasi Karang Taruna Muda Insan Cita',
+    struktur_deskripsi: '',
+    profil_hero_image: '',
+    profil_label_tentang: 'Tentang Kami',
+    profil_label_struktur: 'Struktur Organisasi',
+    profil_label_visi: 'Visi & Misi'
 };
 
 async function getSettings() {

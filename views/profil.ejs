@@ -1,0 +1,219 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<%
+  const subPages = [
+    { key: 'tentang-kami',         label: s.profil_label_tentang  || 'Tentang Kami' },
+    { key: 'struktur-organisasi',  label: s.profil_label_struktur || 'Struktur Organisasi' },
+    { key: 'visi-misi',            label: s.profil_label_visi     || 'Visi & Misi' }
+  ];
+  const activeItem = subPages.find(p => p.key === subPage) || subPages[0];
+%>
+
+<!-- ─── HERO BANNER ─────────────────────────────────────────────────── -->
+<section class="profil-hero pt-20">
+  <% 
+    let heroBg = s.profil_hero_image;
+    if (subPage === 'struktur-organisasi' && s.struktur_hero_image) {
+      heroBg = s.struktur_hero_image;
+    }
+  %>
+  <% if (heroBg) { %>
+    <img class="profil-hero-bg" src="<%= heroBg %>" alt="Profil Hero" loading="lazy">
+  <% } else { %>
+    <!-- Default dark gradient when no image is set -->
+    <div class="profil-hero-bg" style="background: linear-gradient(135deg,#0f2027 0%,#203a43 50%,#2c5364 100%); opacity:1;"></div>
+  <% } %>
+  <div class="profil-hero-overlay"></div>
+
+  <div class="profil-hero-content">
+    <!-- Breadcrumb -->
+    <nav class="profil-breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Beranda</a>
+      <span class="sep">›</span>
+      <a href="/profil">Profil</a>
+      <span class="sep">›</span>
+      <span class="current"><%= activeItem.label %></span>
+    </nav>
+    <h1 class="profil-hero-title">Profil</h1>
+  </div>
+</section>
+
+<!-- ─── BODY: SIDEBAR + CONTENT ─────────────────────────────────────── -->
+<div class="profil-body">
+  <div class="profil-inner">
+
+    <!-- ── SIDEBAR ─────────────────────────────────────────── -->
+    <nav class="profil-sidebar" aria-label="Navigasi Profil">
+      <% subPages.forEach(function(p) { %>
+        <a
+          href="/profil/<%= p.key %>"
+          class="profil-sidebar-item<%= p.key === subPage ? ' active' : '' %>"
+        ><%= p.label %></a>
+      <% }); %>
+    </nav>
+
+    <!-- ── MAIN CONTENT ────────────────────────────────────── -->
+    <main class="profil-content">
+
+      <!-- ══════════════════════════════════════════════
+           SUB-PAGE: TENTANG KAMI
+      ══════════════════════════════════════════════ -->
+      <% if (subPage === 'tentang-kami') { %>
+        <h2 class="profil-content-heading">Tentang Kami</h2>
+
+        <% if (s.about_badge) { %>
+          <span style="display:inline-block;margin:0.75rem 0;padding:4px 14px;background:#fff3e6;color:#c2410c;border-radius:999px;font-size:0.78rem;font-weight:700;">
+            <%= s.about_badge %>
+          </span>
+        <% } %>
+
+        <div class="profil-about-grid">
+          <!-- Gambar -->
+          <div>
+            <img
+              src="<%= s.about_image || '/images/logo.jpeg' %>"
+              alt="<%= s.about_badge || 'Tentang Kami' %>"
+              class="profil-about-img"
+            >
+            <% if (s.about_years) { %>
+            <div style="margin-top:1rem;display:flex;align-items:center;gap:.75rem;padding:1rem;background:linear-gradient(135deg,#e5792a,#c2410c);border-radius:10px;color:#fff;">
+              <div style="font-size:2rem;font-weight:900;line-height:1;"><%= s.about_years %>+</div>
+              <div style="font-size:0.85rem;font-weight:600;line-height:1.3;">Tahun<br>Mengabdi</div>
+            </div>
+            <% } %>
+          </div>
+
+          <!-- Teks -->
+          <div class="profil-about-text">
+            <% if (s.about_title) { %>
+              <h3><%= s.about_title %></h3>
+            <% } %>
+            <% if (s.about_description1) { %>
+              <p><%= s.about_description1 %></p>
+            <% } %>
+            <% if (s.about_description2) { %>
+              <p><%= s.about_description2 %></p>
+            <% } %>
+
+            <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.5rem;">
+              <a href="/kegiatan" style="padding:.65rem 1.5rem;background:linear-gradient(135deg,#e5792a,#c2410c);color:#fff;border-radius:999px;font-size:.85rem;font-weight:700;text-decoration:none;box-shadow:0 4px 12px rgba(229,121,42,.35);transition:transform .2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">Lihat Kegiatan</a>
+              <a href="/kontak" style="padding:.65rem 1.5rem;border:2px solid #e2e8f0;color:#475569;border-radius:999px;font-size:.85rem;font-weight:700;text-decoration:none;transition:all .2s;" onmouseover="this.style.borderColor='#e5792a';this.style.color='#e5792a';" onmouseout="this.style.borderColor='#e2e8f0';this.style.color='#475569';">Hubungi Kami</a>
+            </div>
+          </div>
+        </div>
+
+
+      <!-- ══════════════════════════════════════════════
+           SUB-PAGE: STRUKTUR ORGANISASI
+      ══════════════════════════════════════════════ -->
+      <% } else if (subPage === 'struktur-organisasi') { %>
+        <h2 class="profil-content-heading">Struktur Organisasi</h2>
+
+        <% const strukturJudul = s.struktur_judul || 'Struktur Organisasi Karang Taruna Muda Insan Cita'; %>
+        <p class="profil-content-subtitle"><%= strukturJudul %></p>
+
+        <% if (s.struktur_deskripsi) { %>
+          <p style="color:#64748b;font-size:.9rem;margin-bottom:.5rem;"><%= s.struktur_deskripsi %></p>
+        <% } %>
+
+        <% if (s.struktur_image) { %>
+          <div class="profil-struktur-wrapper">
+            <img
+              src="<%= s.struktur_image %>"
+              alt="Struktur Organisasi <%= strukturJudul %>"
+              class="profil-struktur-img"
+              loading="lazy"
+            >
+          </div>
+          <p style="font-size:.75rem;color:#94a3b8;margin-top:.75rem;text-align:center;">
+            Klik gambar untuk memperbesar. Admin dapat mengubah gambar ini melalui
+            <a href="/admin/pengaturan" style="color:#e5792a;">Panel Admin → Pengaturan → Halaman Profil</a>.
+          </p>
+
+          <!-- Lightbox / zoom on click -->
+          <script>
+          (function(){
+            var img = document.querySelector('.profil-struktur-img');
+            if (!img) return;
+            img.style.cursor = 'zoom-in';
+            img.addEventListener('click', function() {
+              var overlay = document.createElement('div');
+              overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:zoom-out;padding:1rem;';
+              var bigImg = document.createElement('img');
+              bigImg.src = img.src;
+              bigImg.style.cssText = 'max-width:95vw;max-height:92vh;border-radius:8px;box-shadow:0 0 80px rgba(0,0,0,.8);';
+              overlay.appendChild(bigImg);
+              overlay.addEventListener('click', function(){ document.body.removeChild(overlay); });
+              document.body.appendChild(overlay);
+            });
+          })();
+          </script>
+        <% } else { %>
+          <div class="profil-struktur-empty">
+            <i class="fas fa-sitemap"></i>
+            <p>Gambar struktur organisasi belum diupload.</p>
+            <p style="margin-top:.5rem;">
+              <a href="/admin/pengaturan" style="color:#e5792a;font-weight:600;">Upload sekarang melalui Panel Admin</a>
+            </p>
+          </div>
+        <% } %>
+
+
+      <!-- ══════════════════════════════════════════════
+           SUB-PAGE: VISI & MISI
+      ══════════════════════════════════════════════ -->
+      <% } else if (subPage === 'visi-misi') { %>
+        <h2 class="profil-content-heading">Visi & Misi</h2>
+
+        <!-- Visi -->
+        <% if (s.about_visi) { %>
+        <div class="profil-visi-card" style="margin-top:1.5rem;">
+          <h4><i class="fas fa-eye"></i> Visi</h4>
+          <p><%= s.about_visi %></p>
+        </div>
+        <% } %>
+
+        <!-- Misi -->
+        <% const misiList = [s.about_misi1, s.about_misi2, s.about_misi3, s.about_misi4].filter(Boolean); %>
+        <% if (misiList.length > 0) { %>
+        <div class="profil-visi-card">
+          <h4><i class="fas fa-bullseye"></i> Misi</h4>
+          <ul class="profil-misi-list">
+            <% misiList.forEach(function(m) { %>
+              <li><i class="fas fa-check-circle"></i> <%= m %></li>
+            <% }); %>
+          </ul>
+        </div>
+        <% } %>
+
+        <!-- Program Unggulan -->
+        <%
+          const programs = [
+            { title: s.about_program1_title, desc: s.about_program1_desc, icon: 'fas fa-hand-holding-heart', color: '#e5792a' },
+            { title: s.about_program2_title, desc: s.about_program2_desc, icon: 'fas fa-lightbulb', color: '#7c3aed' },
+            { title: s.about_program3_title, desc: s.about_program3_desc, icon: 'fas fa-tree', color: '#16a34a' },
+            { title: s.about_program4_title, desc: s.about_program4_desc, icon: 'fas fa-graduation-cap', color: '#2563eb' }
+          ].filter(p => p.title);
+        %>
+        <% if (programs.length > 0) { %>
+          <h3 style="font-size:1.1rem;font-weight:700;color:#0f172a;margin:2rem 0 .5rem;">Program Unggulan</h3>
+          <div class="profil-programs-grid">
+            <% programs.forEach(function(prog) { %>
+              <div class="profil-program-card">
+                <i class="<%= prog.icon %>" style="color:<%= prog.color %>;"></i>
+                <h5><%= prog.title %></h5>
+                <% if (prog.desc) { %><p><%= prog.desc %></p><% } %>
+              </div>
+            <% }); %>
+          </div>
+        <% } %>
+
+      <% } %>
+
+    </main>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

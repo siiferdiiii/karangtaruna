@@ -1,41 +1,109 @@
-<nav id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-transparent top-0">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-20">
-            <a href="/" class="flex items-center space-x-3">
-                <img src="/images/logo.jpeg" alt="Logo Karang Taruna" class="w-12 h-12 rounded-xl object-cover shadow-lg">
-                <div>
-                    <h1 class="text-xl font-bold text-gray-900 leading-tight">KARANG TARUNA</h1>
-                    <p class="text-xs text-gray-600 font-medium">Kel. Tanjung &bull; Kab. Mempawah</p>
-                </div>
-            </a>
+<!-- ─── Navbar: umkm.go.id style ─────────────────────────────────── -->
+<header id="navbar" class="navbar-umkm fixed top-0 z-40 py-4 px-5 lg:px-10 w-full flex items-center justify-between min-h-20 transition-all duration-300 ease-in-out">
+    <!-- Left: Hamburger -->
+    <button id="sidebar-open" class="navbar-icon-btn text-white focus:outline-none cursor-pointer flex-shrink-0" aria-label="Buka Menu">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+    </button>
 
-            <div class="hidden md:flex items-center space-x-8">
-                <a href="/" class="<%= activeRoute(route, '/') %> font-medium transition-colors">Beranda</a>
-                <a href="/tentang" class="<%= activeRoute(route, '/tentang') %> font-medium transition-colors">Tentang</a>
-                <a href="/struktur" class="<%= activeRoute(route, '/struktur') %> font-medium transition-colors">Struktur</a>
-                <a href="/berita" class="<%= activeRoute(route, '/berita') %> font-medium transition-colors">Berita</a>
-                <a href="/kegiatan" class="<%= activeRoute(route, '/kegiatan') %> font-medium transition-colors">Kegiatan</a>
-                <a href="/galeri" class="<%= activeRoute(route, '/galeri') %> font-medium transition-colors">Galeri</a>
-                <a href="/kontak" class="px-6 py-2.5 bg-gradient-to-r from-karang-500 to-taruna-600 text-white rounded-full font-medium hover:shadow-lg hover:scale-105 transition-all">
-                    Hubungi Kami
-                </a>
+    <!-- Center: Logo + Name -->
+    <a href="/" class="navbar-brand flex flex-col items-center cursor-pointer">
+        <div class="flex items-center gap-3">
+            <img src="/images/logo.jpeg" alt="Logo Karang Taruna" class="w-10 h-10 rounded-full object-cover shadow-lg border-2 border-white/30">
+            <div class="text-left">
+                <p class="text-white font-bold text-base leading-tight tracking-wide">KARANG TARUNA MUDA INSAN CITA</p>
+                <p class="text-white/70 text-xs font-medium tracking-wider">KEL. TANJUNG - KAB. MEMPAWAH - KALIMANTAN BARAT</p>
             </div>
-
-            <button id="mobile-menu-btn" class="md:hidden text-gray-700 text-2xl focus:outline-none">
-                <i class="fas fa-bars"></i>
-            </button>
         </div>
+    </a>
+
+    <!-- Right: Hubungi Kami -->
+    <a href="/kontak" class="navbar-cta flex items-center gap-2 text-white text-sm font-medium hover:text-white/80 transition-all flex-shrink-0">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+        </svg>
+        <span class="hidden md:inline">Hubungi Kami</span>
+    </a>
+</header>
+
+<!-- ─── Sidebar ─────────────────────────────────────────────────── -->
+<div id="sidebar-overlay" class="sidebar-overlay fixed inset-0 bg-black/50 z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+<aside id="sidebar" class="sidebar fixed top-0 left-0 h-full w-72 z-50 flex flex-col">
+    <!-- Sidebar Header -->
+    <div class="sidebar-header flex items-center justify-between px-6 py-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+            <img src="/images/logo.jpeg" alt="Logo" class="w-10 h-10 rounded-full object-cover border-2 border-white/30">
+            <div>
+                <p class="text-white font-bold text-sm leading-tight">KARANG TARUNA MUDA INSAN CITA</p>
+                <p class="text-white/60 text-xs mt-1">KEL. TANJUNG - KAB. MEMPAWAH - KALIMANTAN BARAT</p>
+            </div>
+        </div>
+        <button id="sidebar-close" class="text-white/70 hover:text-white focus:outline-none transition-colors" aria-label="Tutup Menu">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
     </div>
 
-    <div id="mobile-menu" class="hidden md:hidden bg-white shadow-xl border-t">
-        <div class="px-4 py-4 space-y-3">
-            <a href="/" class="block py-2 <%= activeRoute(route, '/') %> font-medium">Beranda</a>
-            <a href="/tentang" class="block py-2 <%= activeRoute(route, '/tentang') %> font-medium">Tentang</a>
-            <a href="/struktur" class="block py-2 <%= activeRoute(route, '/struktur') %> font-medium">Struktur</a>
-            <a href="/berita" class="block py-2 <%= activeRoute(route, '/berita') %> font-medium">Berita</a>
-            <a href="/kegiatan" class="block py-2 <%= activeRoute(route, '/kegiatan') %> font-medium">Kegiatan</a>
-            <a href="/galeri" class="block py-2 <%= activeRoute(route, '/galeri') %> font-medium">Galeri</a>
-            <a href="/kontak" class="block py-2 text-karang-600 font-bold">Hubungi Kami</a>
+    <!-- Sidebar Nav -->
+    <nav class="flex-1 overflow-y-auto py-4">
+        <ul class="space-y-1 px-3">
+            <li>
+                <a href="/" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/85 hover:bg-white/10 hover:text-white transition-all duration-200 font-medium <%= activeRoute(route, '/') === 'text-karang-600 font-bold' ? 'sidebar-active' : '' %>">
+                    <i class="fas fa-home w-5 text-center text-sm"></i>
+                    <span>Beranda</span>
+                </a>
+            </li>
+            <li>
+                <a href="/profil/tentang-kami" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/85 hover:bg-white/10 hover:text-white transition-all duration-200 font-medium <%= (route === '/profil' || route === '/tentang') ? 'sidebar-active' : '' %>">
+                    <i class="fas fa-info-circle w-5 text-center text-sm"></i>
+                    <span>Tentang Kami</span>
+                </a>
+            </li>
+            <li>
+                <a href="/profil/struktur-organisasi" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/85 hover:bg-white/10 hover:text-white transition-all duration-200 font-medium <%= (route === '/profil' || route === '/struktur') ? 'sidebar-active' : '' %>">
+                    <i class="fas fa-sitemap w-5 text-center text-sm"></i>
+                    <span>Struktur Kepengurusan</span>
+                </a>
+            </li>
+            <li>
+                <a href="/berita" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/85 hover:bg-white/10 hover:text-white transition-all duration-200 font-medium <%= activeRoute(route, '/berita') === 'text-karang-600 font-bold' ? 'sidebar-active' : '' %>">
+                    <i class="fas fa-newspaper w-5 text-center text-sm"></i>
+                    <span>Berita & Pengumuman</span>
+                </a>
+            </li>
+            <li>
+                <a href="/kegiatan" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/85 hover:bg-white/10 hover:text-white transition-all duration-200 font-medium <%= activeRoute(route, '/kegiatan') === 'text-karang-600 font-bold' ? 'sidebar-active' : '' %>">
+                    <i class="fas fa-calendar-alt w-5 text-center text-sm"></i>
+                    <span>Kegiatan</span>
+                </a>
+            </li>
+            <li>
+                <a href="/galeri" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/85 hover:bg-white/10 hover:text-white transition-all duration-200 font-medium <%= activeRoute(route, '/galeri') === 'text-karang-600 font-bold' ? 'sidebar-active' : '' %>">
+                    <i class="fas fa-images w-5 text-center text-sm"></i>
+                    <span>Galeri</span>
+                </a>
+            </li>
+            <li>
+                <a href="/daftar-anggota" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-white/85 hover:bg-white/10 hover:text-white transition-all duration-200 font-medium">
+                    <i class="fas fa-user-plus w-5 text-center text-sm"></i>
+                    <span>Daftar Anggota</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="mt-4 mx-3 pt-4 border-t border-white/10">
+            <a href="/kontak" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold transition-all duration-200">
+                <i class="fas fa-envelope w-5 text-center text-sm"></i>
+                <span>Hubungi Kami</span>
+            </a>
         </div>
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="px-6 py-4 border-t border-white/10">
+        <p class="text-white/40 text-xs text-center">© 2026 Karang Taruna Kel. Tanjung</p>
     </div>
-</nav>
+</aside>

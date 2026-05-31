@@ -185,17 +185,40 @@ app.get('/galeri', async (req, res) => {
     }
 });
 
-app.get('/struktur', async (req, res) => {
-    try {
-        const list = await getPengurus();
-        res.render('struktur', { title: 'Struktur Kepengurusan', route: '/struktur', pengurus: list });
-    } catch (err) {
-        console.error('[/struktur] Error:', err);
-        res.render('struktur', { title: 'Struktur Kepengurusan', route: '/struktur', pengurus: [] });
-    }
+app.get('/struktur', (req, res) => res.redirect(301, '/profil/struktur-organisasi'));
+
+// ─── PROFIL ROUTES ────────────────────────────────────────────────────────────
+app.get('/profil', (req, res) => res.redirect(302, '/profil/tentang-kami'));
+
+app.get('/profil/tentang-kami', (req, res) => {
+    res.render('profil', {
+        title: 'Tentang Kami | Profil',
+        route: '/profil',
+        subPage: 'tentang-kami',
+        metaDescription: `Profil dan sejarah ${res.locals.s && res.locals.s.about_title ? res.locals.s.about_title : 'Karang Taruna Muda Insan Cita'}`
+    });
 });
 
-app.get('/tentang', (req, res) => res.render('tentang', { title: 'Tentang Kami', route: '/tentang' }));
+app.get('/profil/struktur-organisasi', (req, res) => {
+    res.render('profil', {
+        title: 'Struktur Organisasi | Profil',
+        route: '/profil',
+        subPage: 'struktur-organisasi',
+        metaDescription: 'Struktur Organisasi Karang Taruna Muda Insan Cita - Kelurahan Tanjung, Kabupaten Mempawah, Kalimantan Barat'
+    });
+});
+
+app.get('/profil/visi-misi', (req, res) => {
+    res.render('profil', {
+        title: 'Visi & Misi | Profil',
+        route: '/profil',
+        subPage: 'visi-misi',
+        metaDescription: 'Visi, Misi, dan Program Unggulan Karang Taruna Muda Insan Cita'
+    });
+});
+
+app.get('/tentang', (req, res) => res.redirect(301, '/profil/tentang-kami'));
+
 
 app.get('/kontak', (req, res) => res.render('kontak', { title: 'Hubungi Kami', route: '/kontak', success: false }));
 app.post('/kontak', (req, res) => res.render('kontak', { title: 'Hubungi Kami', route: '/kontak', success: true }));

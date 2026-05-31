@@ -411,15 +411,55 @@ router.post('/kolaborator/hapus/:id', isAuthenticated, async (req, res) => {
 router.get('/pengurus', isAuthenticated, async (req, res) => {
     try {
         const list = await getPengurus();
+        const settings = await getSettings();
         res.render('admin/pengurus-list', {
             title: 'Kelola Pengurus',
             adminUser: req.adminUser,
             pengurus: list,
+            settings,
             success: req.query.success ? decodeURIComponent(req.query.success) : null,
             error: req.query.error ? decodeURIComponent(req.query.error) : null
         });
     } catch (err) {
         res.redirect('/admin/dashboard?error=' + encodeURIComponent('Gagal memuat daftar pengurus.'));
+    }
+});
+
+router.post('/pengurus/struktur-bagan', isAuthenticated, upload.fields([
+    { name: 'struktur_image_file', maxCount: 1 },
+    { name: 'struktur_hero_image_file', maxCount: 1 }
+]), async (req, res) => {
+    try {
+        const settings = await getSettings();
+        const body = req.body;
+        
+        // Handle bagan struktur image upload
+        if (req.files && req.files.struktur_image_file && req.files.struktur_image_file[0]) {
+            const file = req.files.struktur_image_file[0];
+            body.struktur_image = await uploadImage(file.buffer, file.originalname, file.mimetype);
+        }
+
+        // Handle bagan hero image upload
+        if (req.files && req.files.struktur_hero_image_file && req.files.struktur_hero_image_file[0]) {
+            const file = req.files.struktur_hero_image_file[0];
+            body.struktur_hero_image = await uploadImage(file.buffer, file.originalname, file.mimetype);
+        }
+        
+        // Clean up temporary fields before saving settings
+        delete body.struktur_image_file;
+        delete body.struktur_hero_image_file;
+
+        // Merge with current settings to ensure we only update what was submitted
+        const newSettings = { ...settings, ...body };
+        await updateSettings(newSettings);
+
+        // Reset app settings cache so it reloads on next request
+        req.app.locals._settingsLoaded = false;
+        
+        res.redirect('/admin/pengurus?success=' + encodeURIComponent('Pengaturan bagan struktur organisasi berhasil disimpan!'));
+    } catch (err) {
+        console.error('Update bagan error:', err);
+        res.redirect('/admin/pengurus?error=' + encodeURIComponent('Gagal menyimpan bagan: ' + err.message));
     }
 });
 
@@ -522,7 +562,10 @@ router.get('/pengaturan', isAuthenticated, async (req, res) => {
 
 router.post('/pengaturan', isAuthenticated, upload.fields([
     { name: 'hero_image_file', maxCount: 1 },
-    { name: 'about_image_file', maxCount: 1 }
+    { name: 'about_image_file', maxCount: 1 },
+    { name: 'struktur_image_file', maxCount: 1 },
+    { name: 'profil_hero_image_file', maxCount: 1 },
+    { name: 'struktur_hero_image_file', maxCount: 1 }
 ]), async (req, res) => {
     try {
         const body = req.body;
@@ -538,10 +581,31 @@ router.post('/pengaturan', isAuthenticated, upload.fields([
             const file = req.files.about_image_file[0];
             body.about_image = await uploadImage(file.buffer, file.originalname, file.mimetype);
         }
+
+        // Handle struktur organisasi image upload
+        if (req.files && req.files.struktur_image_file && req.files.struktur_image_file[0]) {
+            const file = req.files.struktur_image_file[0];
+            body.struktur_image = await uploadImage(file.buffer, file.originalname, file.mimetype);
+        }
+
+        // Handle profil hero background image upload
+        if (req.files && req.files.profil_hero_image_file && req.files.profil_hero_image_file[0]) {
+            const file = req.files.profil_hero_image_file[0];
+            body.profil_hero_image = await uploadImage(file.buffer, file.originalname, file.mimetype);
+        }
+
+        // Handle struktur hero background image upload
+        if (req.files && req.files.struktur_hero_image_file && req.files.struktur_hero_image_file[0]) {
+            const file = req.files.struktur_hero_image_file[0];
+            body.struktur_hero_image = await uploadImage(file.buffer, file.originalname, file.mimetype);
+        }
         
         // Clean up temporary fields before saving settings
         delete body.hero_image_file;
         delete body.about_image_file;
+        delete body.struktur_image_file;
+        delete body.profil_hero_image_file;
+        delete body.struktur_hero_image_file;
         
         await updateSettings(body);
         

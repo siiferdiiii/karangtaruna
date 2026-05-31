@@ -1,47 +1,62 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Navbar scroll effect
+    // ── Navbar scroll effect ──────────────────────────────────────
     const navbar = document.getElementById('navbar');
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
+
+    // On beranda (fullscreen hero), keep navbar always transparent
+    // On other pages, make navbar solid immediately
+    const isHomePage = document.getElementById('hero-slider') !== null;
 
     function handleScroll() {
-        if (window.scrollY > 50) {
-            navbar.classList.add('nav-blur');
-            navbar.classList.remove('bg-transparent');
+        if (!navbar) return;
+        if (isHomePage) {
+            // Homepage: transparent always (hero is fullscreen)
+            // Optionally add slight darkening after scroll passes hero
+            if (window.scrollY > window.innerHeight - 100) {
+                navbar.classList.add('nav-solid');
+            } else {
+                navbar.classList.remove('nav-solid');
+            }
         } else {
-            navbar.classList.remove('nav-blur');
-            navbar.classList.add('bg-transparent');
+            // Other pages: always solid dark navbar
+            navbar.classList.add('nav-solid');
         }
     }
 
     window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Check on load
+    handleScroll(); // Apply on load
 
-    // Mobile menu toggle
-    if (mobileMenuBtn && mobileMenu) {
-        mobileMenuBtn.addEventListener('click', function() {
-            mobileMenu.classList.toggle('hidden');
-            const icon = this.querySelector('i');
-            if (mobileMenu.classList.contains('hidden')) {
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            } else {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-times');
-            }
-        });
+    // ── Sidebar Toggle ─────────────────────────────────────────────
+    const sidebar        = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const sidebarOpen    = document.getElementById('sidebar-open');
+    const sidebarClose   = document.getElementById('sidebar-close');
+
+    function openSidebar() {
+        if (!sidebar) return;
+        sidebar.classList.add('sidebar-open');
+        sidebarOverlay.classList.add('sidebar-overlay-open');
+        document.body.style.overflow = 'hidden';
     }
 
-    // Close mobile menu on link click
-    document.querySelectorAll('#mobile-menu a').forEach(link => {
-        link.addEventListener('click', () => {
-            mobileMenu.classList.add('hidden');
-            if (mobileMenuBtn) {
-                const icon = mobileMenuBtn.querySelector('i');
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            }
-        });
+    function closeSidebar() {
+        if (!sidebar) return;
+        sidebar.classList.remove('sidebar-open');
+        sidebarOverlay.classList.remove('sidebar-overlay-open');
+        document.body.style.overflow = '';
+    }
+
+    if (sidebarOpen) sidebarOpen.addEventListener('click', openSidebar);
+    if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+    if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+
+    // Close sidebar on ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeSidebar();
+    });
+
+    // Close sidebar when a link inside it is clicked
+    document.querySelectorAll('#sidebar .sidebar-link, #sidebar a').forEach(link => {
+        link.addEventListener('click', closeSidebar);
     });
 
     // Scroll reveal animation

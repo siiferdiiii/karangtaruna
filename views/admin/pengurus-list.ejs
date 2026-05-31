@@ -2,9 +2,104 @@
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Kelola Pengurus</h1>
-        <p class="page-sub">Kelola struktur organisasi dan pengurus Karang Taruna Kelurahan Tanjung</p>
+        <h1 class="page-title">Kelola Pengurus & Struktur</h1>
+        <p class="page-sub">Kelola bagan struktur organisasi dan database pengurus Karang Taruna Kelurahan Tanjung</p>
     </div>
+</div>
+
+<!-- Alert info premium -->
+<div style="background: linear-gradient(135deg, #fff3e6 0%, #ffe8cc 100%); border-left: 5px solid #e5792a; padding: 1.25rem; border-radius: 12px; margin-bottom: 2rem; display: flex; gap: 1rem; align-items: flex-start; box-shadow: 0 4px 15px rgba(229,121,42,0.08);">
+    <div style="background: #e5792a; color: #fff; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; box-shadow: 0 4px 8px rgba(229,121,42,0.3);">
+        <i class="fas fa-info-circle"></i>
+    </div>
+    <div style="flex: 1;">
+        <h4 style="font-weight: 700; color: #7c2d12; margin-top: 0.15rem; font-size: 15px; margin-bottom: 0.25rem;">Informasi: Format Tampilan Halaman Publik</h4>
+        <p style="font-size: 13px; color: #9a3412; line-height: 1.5; margin: 0;">
+            Halaman publik <strong>Struktur Organisasi</strong> saat ini telah didesain ulang dengan konsep visual premium ala <strong>umkm.go.id</strong>. Halaman tersebut menampilkan <strong>satu gambar bagan tunggal</strong> yang di-upload di bawah ini.
+        </p>
+        <p style="font-size: 12px; color: #c2410c; margin-top: 0.5rem; font-weight: 600;">
+            * Database Pengurus Terdaftar (di kolom kanan/bawah) tetap disimpan dengan aman di database. Jika nanti Anda ingin beralih kembali ke tampilan kartu individu, data Anda tidak akan hilang.
+        </p>
+    </div>
+</div>
+
+<!-- Form Upload Bagan Struktur -->
+<div class="section-card" style="margin-bottom: 2rem;">
+    <h3 class="card-subtitle" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+        <span><i class="fas fa-sitemap" style="color: #e5792a;"></i> Pengaturan Bagan & Header Struktur Halaman Publik</span>
+        <span style="font-size: 11px; padding: 4px 10px; background: #e0f2fe; color: #0369a1; border-radius: 999px; font-weight: 700;">TAMPILAN AKTIF PUBLIK</span>
+    </h3>
+    
+    <form action="/admin/pengurus/struktur-bagan" method="POST" enctype="multipart/form-data">
+        <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <!-- Bagan Struktur Gambar -->
+                <div>
+                    <h4 style="font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 12px;"><i class="fas fa-project-diagram" style="color:#e5792a;margin-right:4px;"></i> 1. Gambar Bagan Struktur</h4>
+                    <div style="margin-bottom: 12px;">
+                        <% if (settings.struktur_image) { %>
+                        <img id="baganPreview" src="<%= settings.struktur_image %>" alt="Bagan Struktur" style="width: 100%; border-radius: 8px; object-fit: cover; max-height: 140px; border: 1px solid var(--border);">
+                        <% } else { %>
+                        <div id="baganPreviewPlaceholder" style="width: 100%; height: 120px; border-radius: 8px; background: #f8fafc; border: 2px dashed #e2e8f0; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 12px; flex-direction:column; gap:6px;">
+                            <i class="fas fa-sitemap" style="font-size:24px;color:#cbd5e1;"></i>
+                            <span>Belum ada gambar bagan</span>
+                        </div>
+                        <% } %>
+                    </div>
+                    <label class="upload-area" for="baganFileInput" style="padding: 12px; min-height: 60px;">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 16px; margin-bottom: 2px;"></i>
+                        <span style="font-size: 11px; font-weight:600;">Pilih Gambar Bagan Baru</span>
+                        <input type="file" name="struktur_image_file" id="baganFileInput" accept="image/*" style="display:none">
+                    </label>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label class="form-label" style="font-size: 11px;">Atau URL Gambar Bagan</label>
+                        <input type="url" name="struktur_image" id="baganUrlInput" class="form-input" value="<%= settings.struktur_image || '' %>" placeholder="https://..." style="padding: 8px 12px; font-size: 12px;">
+                    </div>
+                </div>
+
+                <!-- Header Latar Gambar -->
+                <div>
+                    <h4 style="font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 12px;"><i class="fas fa-image" style="color:#e5792a;margin-right:4px;"></i> 2. Gambar Latar Header Halaman</h4>
+                    <div style="margin-bottom: 12px;">
+                        <% if (settings.struktur_hero_image) { %>
+                        <img id="headerPreview" src="<%= settings.struktur_hero_image %>" alt="Header Latar" style="width: 100%; border-radius: 8px; object-fit: cover; max-height: 140px; border: 1px solid var(--border);">
+                        <% } else { %>
+                        <div id="headerPreviewPlaceholder" style="width: 100%; height: 120px; border-radius: 8px; background: #1e293b; display: flex; align-items: center; justify-content: center; color: #cbd5e1; font-size: 12px; flex-direction:column; gap:6px;">
+                            <i class="fas fa-image" style="font-size:24px;color:#475569;"></i>
+                            <span style="color:#94a3b8;">Menggunakan latar default (dark)</span>
+                        </div>
+                        <% } %>
+                    </div>
+                    <label class="upload-area" for="headerFileInput" style="padding: 12px; min-height: 60px; background: #fafafa;">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 16px; margin-bottom: 2px; color: #64748b;"></i>
+                        <span style="font-size: 11px; color: #475569; font-weight:600;">Pilih Gambar Latar Baru</span>
+                        <input type="file" name="struktur_hero_image_file" id="headerFileInput" accept="image/*" style="display:none">
+                    </label>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label class="form-label" style="font-size: 11px;">Atau URL Gambar Latar</label>
+                        <input type="url" name="struktur_hero_image" id="headerUrlInput" class="form-input" value="<%= settings.struktur_hero_image || '' %>" placeholder="https://..." style="padding: 8px 12px; font-size: 12px;">
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 16px; border-top: 1px solid #f1f5f9; padding-top: 1.25rem; margin-top:0.5rem;">
+                <div class="form-group">
+                    <label class="form-label" style="font-size: 12px;">Judul Halaman Struktur (Publik)</label>
+                    <input type="text" name="struktur_judul" class="form-input" value="<%= settings.struktur_judul || 'Struktur Organisasi Karang Taruna Muda Insan Cita' %>" style="padding: 8px 12px; font-size: 12px;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-size: 12px;">Deskripsi Singkat Halaman</label>
+                    <input type="text" name="struktur_deskripsi" class="form-input" value="<%= settings.struktur_deskripsi || '' %>" placeholder="Deskripsi opsional di bawah judul..." style="padding: 8px 12px; font-size: 12px;">
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 1.5rem; text-align: right; border-top: 1px solid #f1f5f9; padding-top: 1rem;">
+            <button type="submit" class="btn btn-primary" style="padding: 10px 24px; font-size: 13px; font-weight: 700; border-radius: 8px; box-shadow: 0 4px 10px rgba(229,121,42,0.15);">
+                <i class="fas fa-save" style="margin-right: 6px;"></i> Simpan Pengaturan Bagan & Header
+            </button>
+        </div>
+    </form>
 </div>
 
 <div class="form-grid">
@@ -120,7 +215,7 @@
 <%- include('partials/footer', { extraScript: '' }) %>
 
 <script>
-    // Live Image Preview
+    // Live Image Preview for Foto Profil
     document.getElementById('fotoInput').addEventListener('change', function() {
         var file = this.files[0];
         if (file) {
@@ -128,6 +223,58 @@
             reader.onload = function(e) {
                 document.getElementById('imgPreview').src = e.target.result;
                 document.getElementById('previewBox').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Live preview helper for bagan
+    document.getElementById('baganFileInput').addEventListener('change', function() {
+        var file = this.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var previewImg = document.getElementById('baganPreview');
+                if (previewImg) {
+                    previewImg.src = e.target.result;
+                } else {
+                    var placeholder = document.getElementById('baganPreviewPlaceholder');
+                    if (placeholder) {
+                        var img = document.createElement('img');
+                        img.id = 'baganPreview';
+                        img.src = e.target.result;
+                        img.style = 'width: 100%; border-radius: 8px; object-fit: cover; max-height: 140px; border: 1px solid var(--border);';
+                        placeholder.parentNode.replaceChild(img, placeholder);
+                    }
+                }
+                var urlInput = document.getElementById('baganUrlInput');
+                if (urlInput) urlInput.value = '';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Live preview helper for header
+    document.getElementById('headerFileInput').addEventListener('change', function() {
+        var file = this.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var previewImg = document.getElementById('headerPreview');
+                if (previewImg) {
+                    previewImg.src = e.target.result;
+                } else {
+                    var placeholder = document.getElementById('headerPreviewPlaceholder');
+                    if (placeholder) {
+                        var img = document.createElement('img');
+                        img.id = 'headerPreview';
+                        img.src = e.target.result;
+                        img.style = 'width: 100%; border-radius: 8px; object-fit: cover; max-height: 140px; border: 1px solid var(--border);';
+                        placeholder.parentNode.replaceChild(img, placeholder);
+                    }
+                }
+                var urlInput = document.getElementById('headerUrlInput');
+                if (urlInput) urlInput.value = '';
             };
             reader.readAsDataURL(file);
         }
